@@ -1,0 +1,2888 @@
+/* ==========================================================================
+   RAKSHAROVER TACTICAL WEARABLE UI/UX DESIGN SYSTEM & PRESENTATION STYLESHEET
+   Target Display: 1.78" AMOLED Wearable (368 x 448 px)
+   Aesthetic: Futuristic Disaster Rescue Technology + Tactical Medical Wearable
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01. DESIGN TOKENS & CSS VARIABLES
+   -------------------------------------------------------------------------- */
+:root {
+  /* Core Color Palette */
+  --bg-presentation: #050811;
+  --bg-presentation-surface: #0a0f1d;
+  --bg-presentation-border: #1a233a;
+  
+  /* Wearable Screen Color Palette */
+  --screen-bg: #070B14;
+  --screen-bg-subtle: #0c1322;
+  --screen-card-bg: rgba(16, 24, 43, 0.75);
+  --screen-card-border: rgba(0, 210, 255, 0.18);
+  --screen-card-border-subtle: rgba(255, 255, 255, 0.08);
+
+  /* Tactical Accents */
+  --color-electric-blue: #00D2FF;
+  --color-blue-glow: rgba(0, 210, 255, 0.35);
+  --color-safe-green: #10B981;
+  --color-green-glow: rgba(16, 185, 129, 0.35);
+  --color-warning-orange: #F59E0B;
+  --color-emergency-red: #EF4444;
+  --color-emergency-glow: rgba(239, 68, 68, 0.45);
+  --color-emergency-bg-pulse: rgba(239, 68, 68, 0.12);
+
+  /* Monochromes & Typography */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-highlight: #FFFFFF;
+
+  /* Typography Families */
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Space Grotesk', sans-serif;
+
+  /* Smartwatch Dimensions */
+  --watch-screen-width: 250px;
+  --watch-screen-height: 304px; /* ~368:448 proportional ratio */
+  --watch-screen-radius: 34px;
+
+  /* Titanium Casing */
+  --casing-metal-dark: #121620;
+  --casing-metal-mid: #1c2230;
+  --casing-metal-light: #2c364c;
+  --casing-metal-highlight: #3f4e6d;
+  --casing-border: #283347;
+  --casing-radius: 46px;
+
+  /* Transitions */
+  --ease-tactical: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.18s var(--ease-tactical);
+  --transition-smooth: 0.35s var(--ease-tactical);
+}
+
+/* --------------------------------------------------------------------------
+   02. RESET & BASE STYLING
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  background-color: var(--bg-presentation);
+}
+
+body {
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  background-color: var(--bg-presentation);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 210, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 85% 60%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(7, 11, 20, 0.8) 0%, rgba(5, 8, 17, 1) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.015) 40px, rgba(255, 255, 255, 0.015) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255, 255, 255, 0.015) 40px, rgba(255, 255, 255, 0.015) 41px);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --------------------------------------------------------------------------
+   03. PRESENTATION HEADER & TOOLBAR
+   -------------------------------------------------------------------------- */
+.pres-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(7, 11, 20, 0.88);
+  border-bottom: 1px solid var(--bg-presentation-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+.pres-header-inner {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.pres-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-shield {
+  width: 32px;
+  height: 32px;
+  color: var(--color-electric-blue);
+  filter: drop-shadow(0 0 8px var(--color-blue-glow));
+}
+
+.brand-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-super {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--color-electric-blue);
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+
+.brand-title span {
+  color: var(--color-electric-blue);
+  text-shadow: 0 0 16px var(--color-blue-glow);
+}
+
+.brand-tagline {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+/* Toolbar Buttons */
+.pres-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.view-switch-group {
+  display: flex;
+  background: rgba(16, 24, 43, 0.8);
+  border: 1px solid var(--bg-presentation-border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toolbar-btn:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.toolbar-btn.active {
+  color: #050811;
+  background: var(--color-electric-blue);
+  box-shadow: 0 0 12px var(--color-blue-glow);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--bg-presentation-border);
+}
+
+.toolbar-btn.secondary {
+  background: rgba(16, 24, 43, 0.7);
+  border-color: var(--bg-presentation-border);
+}
+
+.toolbar-btn.secondary:hover {
+  border-color: var(--color-electric-blue);
+  color: var(--color-electric-blue);
+}
+
+.toolbar-btn.alert-trigger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #FF8F9C;
+}
+
+.toolbar-btn.alert-trigger:hover {
+  background: var(--color-emergency-red);
+  color: #FFFFFF;
+  box-shadow: 0 0 16px var(--color-emergency-glow);
+}
+
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-emergency-red);
+  box-shadow: 0 0 8px var(--color-emergency-red);
+  animation: pulse-dot 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* Sub-Banner / Color Palette Bar */
+.pres-subbar {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 0.5rem 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.palette-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.palette-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chip-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.display-specs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+}
+
+.spec-divider {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   04. HARDWARE & SENSOR MAPPING DRAWER (COLLAPSIBLE)
+   -------------------------------------------------------------------------- */
+.hardware-drawer {
+  position: relative;
+  z-index: 90;
+  background: #090e1b;
+  border-bottom: 2px solid var(--color-electric-blue);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+  transition: all var(--transition-smooth);
+  overflow: hidden;
+  max-height: 1200px;
+}
+
+.hardware-drawer.collapsed {
+  max-height: 0;
+  border-bottom-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.drawer-inner {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 2rem;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge-tech {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(0, 210, 255, 0.15);
+  color: var(--color-electric-blue);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.drawer-title h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.drawer-close {
+  background: transparent;
+  border: 1px solid var(--bg-presentation-border);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.drawer-close:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--color-emergency-red);
+  color: #FFFFFF;
+}
+
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.sensor-card {
+  background: rgba(16, 24, 43, 0.85);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.sensor-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-electric-blue);
+}
+
+.sensor-id {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-warning-orange);
+  letter-spacing: 0.05em;
+}
+
+.sensor-chip {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.sensor-role {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.sensor-ui-map {
+  margin-top: 0.35rem;
+  padding: 0.45rem;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  font-size: 0.72rem;
+  color: var(--color-electric-blue);
+  line-height: 1.35;
+}
+
+.sensor-ui-map strong {
+  color: #FFFFFF;
+}
+
+.map-arrow {
+  color: var(--color-safe-green);
+  font-weight: 700;
+}
+
+.sensor-telemetry {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   05. MAIN PRESENTATION STAGE & SIDE-BY-SIDE 6 SCREENS
+   -------------------------------------------------------------------------- */
+.presentation-stage {
+  max-width: 1760px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.screens-showcase {
+  display: none;
+}
+
+.screens-showcase.active {
+  display: block;
+}
+
+.screens-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1680px) {
+  .screens-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 880px) {
+  .screens-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 580px) {
+  .screens-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.screen-presentation-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Column Header Meta */
+.col-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+
+.col-number {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--color-electric-blue);
+  background: rgba(0, 210, 255, 0.1);
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.col-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #FFFFFF;
+}
+
+.col-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.screen-caption {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 250px;
+}
+
+.screen-caption.alert-caption {
+  color: #FF8F9C;
+}
+
+/* --------------------------------------------------------------------------
+   06. REALISTIC TACTICAL SMARTWATCH CASING CHASSIS
+   -------------------------------------------------------------------------- */
+.smartwatch-casing {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.8));
+  transition: transform var(--transition-smooth), filter var(--transition-smooth);
+}
+
+.smartwatch-casing:hover {
+  transform: translateY(-4px);
+  filter: drop-shadow(0 24px 38px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 15px rgba(0, 210, 255, 0.15));
+}
+
+/* Rugged Case Body */
+.case-body {
+  position: relative;
+  width: calc(var(--watch-screen-width) + 36px);
+  height: calc(var(--watch-screen-height) + 36px);
+  background: linear-gradient(145deg, #242c3d 0%, #151a26 40%, #0d111a 100%);
+  border: 2px solid var(--casing-border);
+  border-radius: var(--casing-radius);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.25),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.8),
+    0 8px 24px rgba(0, 0, 0, 0.6);
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+/* Minimal Chassis Mode (when toggled) */
+.smartwatch-casing.minimal-casing .case-body {
+  width: var(--watch-screen-width);
+  height: var(--watch-screen-height);
+  padding: 0;
+  border-radius: var(--watch-screen-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.smartwatch-casing.minimal-casing .case-lug,
+.smartwatch-casing.minimal-casing .case-screw,
+.smartwatch-casing.minimal-casing .case-crown,
+.smartwatch-casing.minimal-casing .case-sos-guard {
+  display: none !important;
+}
+
+/* Strap Lugs */
+.case-lug {
+  width: 90px;
+  height: 14px;
+  background: linear-gradient(180deg, #18202d 0%, #0d121c 100%);
+  border: 1px solid #232c3f;
+  z-index: 1;
+}
+
+.lug-top {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  margin-bottom: -4px;
+}
+
+.lug-bottom {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  margin-top: -4px;
+}
+
+/* Torx Hex Screws */
+.case-screw {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3b465c;
+  box-shadow: inset 0 1px 1px #596a8a, 0 1px 2px rgba(0, 0, 0, 0.6);
+  border: 1px solid #1a2130;
+}
+
+.case-screw::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 1px;
+  background: #111622;
+}
+
+.screw-tl { top: 9px; left: 10px; }
+.screw-tr { top: 9px; right: 10px; }
+.screw-bl { bottom: 9px; left: 10px; }
+.screw-br { bottom: 9px; right: 10px; }
+
+/* Tactile Crown Dial (Right Side) */
+.case-crown {
+  position: absolute;
+  right: -10px;
+  top: 36%;
+  width: 10px;
+  height: 38px;
+  background: repeating-linear-gradient(180deg, #475569 0px, #475569 2px, #1e293b 2px, #1e293b 4px);
+  border-radius: 0 4px 4px 0;
+  border: 1px solid #0f172a;
+  border-left: none;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.case-crown:hover {
+  transform: scaleX(1.15);
+}
+
+/* Physical SOS Tactical Button (Bottom Right) */
+.case-sos-guard {
+  position: absolute;
+  right: -8px;
+  bottom: 24%;
+  width: 8px;
+  height: 28px;
+  background: #18202e;
+  border-radius: 0 3px 3px 0;
+  border: 1px solid #2d384c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.case-sos-button {
+  width: 5px;
+  height: 20px;
+  background: #991b1b;
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+.case-sos-button.active-alert {
+  background: #EF4444;
+  box-shadow: 0 0 10px #EF4444;
+  animation: pulse-dot 1s infinite;
+}
+
+/* Emergency Case High Alert Styling */
+.smartwatch-casing.casing-emergency .case-body.alert-border-pulse {
+  border-color: rgba(239, 68, 68, 0.6);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    0 0 24px rgba(239, 68, 68, 0.35),
+    0 10px 30px rgba(0, 0, 0, 0.8);
+  animation: emergency-casing-pulse 1.8s infinite alternate ease-in-out;
+}
+
+@keyframes emergency-casing-pulse {
+  0% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 14px rgba(239, 68, 68, 0.25); }
+  100% { border-color: #EF4444; box-shadow: 0 0 28px rgba(239, 68, 68, 0.6); }
+}
+
+/* --------------------------------------------------------------------------
+   07. SCREEN VIEWPORT & RETINA DISPLAY CONTAINER
+   -------------------------------------------------------------------------- */
+.screen-viewport {
+  position: relative;
+  width: var(--watch-screen-width);
+  height: var(--watch-screen-height);
+  background-color: var(--screen-bg);
+  border-radius: var(--watch-screen-radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.9),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Subtle Anti-Reflective AMOLED Bezel Curve Highlight */
+.screen-viewport::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(175deg, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 10;
+  border-top-left-radius: var(--watch-screen-radius);
+  border-top-right-radius: var(--watch-screen-radius);
+}
+
+/* --------------------------------------------------------------------------
+   08. WEARABLE STATUS BAR (SHARED ACROSS SCREENS)
+   -------------------------------------------------------------------------- */
+.wearable-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px 4px;
+  min-height: 26px;
+  z-index: 5;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.9) 0%, rgba(7, 11, 20, 0) 100%);
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.brand-mini {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--color-electric-blue);
+}
+
+.screen-title-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.screen-title-tag.text-alert {
+  color: #EF4444;
+}
+
+.status-indicator-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.safe-dot {
+  background: var(--color-safe-green);
+  box-shadow: 0 0 5px var(--color-safe-green);
+}
+
+.status-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-clock {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-icon {
+  width: 13px;
+  height: 13px;
+}
+
+/* Battery Pill Widget */
+.battery-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  padding: 1px 3px;
+  min-width: 32px;
+  height: 11px;
+}
+
+.battery-pill::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 2px;
+  width: 2px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 0 1px 1px 0;
+}
+
+.battery-level {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  bottom: 1px;
+  background: var(--color-safe-green);
+  border-radius: 1px;
+  z-index: 1;
+}
+
+.battery-text {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-left: auto;
+  line-height: 1;
+}
+
+/* Emergency Top Bar Variation */
+.emergency-top-bar {
+  background: rgba(239, 68, 68, 0.18);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.alert-beacon-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 6px #EF4444;
+  animation: pulse-dot 0.8s infinite;
+}
+
+.alert-headline {
+  color: #EF4444 !important;
+  font-weight: 800 !important;
+}
+
+.alert-battery .battery-level {
+  background: #EF4444;
+}
+
+/* --------------------------------------------------------------------------
+   09. WEARABLE BOTTOM NAVIGATION INDICATOR
+   -------------------------------------------------------------------------- */
+.wearable-nav-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 0 8px;
+  margin-top: auto;
+  z-index: 5;
+}
+
+.nav-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.nav-dot.active {
+  width: 14px;
+  border-radius: 3px;
+  background: var(--color-electric-blue);
+  box-shadow: 0 0 6px var(--color-blue-glow);
+}
+
+.nav-dot.active-alert-dot {
+  width: 14px;
+  border-radius: 3px;
+  background: var(--color-emergency-red);
+  box-shadow: 0 0 8px var(--color-emergency-red);
+}
+
+/* --------------------------------------------------------------------------
+   10. SCREEN 01: HOME / VITAL STATUS STYLING
+   -------------------------------------------------------------------------- */
+.screen-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 14px 2px;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.system-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1px;
+}
+
+.system-tag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--color-electric-blue);
+  letter-spacing: 0.06em;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.status-pill-safe {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34D399;
+}
+
+.green-beacon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-safe-green);
+  box-shadow: 0 0 6px var(--color-safe-green);
+}
+
+/* Hero Time Card */
+.hero-time-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 0 4px;
+}
+
+.time-large {
+  font-family: var(--font-mono);
+  font-size: 2.35rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #FFFFFF;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.time-sub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.time-sec {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-electric-blue);
+}
+
+.time-tz {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* 2x2 Vitals Quick Grid */
+.vitals-quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.vital-mini-card {
+  background: var(--screen-card-bg);
+  border: 1px solid var(--screen-card-border-subtle);
+  border-radius: 10px;
+  padding: 5px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  backdrop-filter: blur(8px);
+}
+
+.vital-mini-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vital-glyph {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.vital-label {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+}
+
+.vital-mini-value {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.num-large {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+
+.unit-text {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.text-status-green {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--color-safe-green);
+  line-height: 1.2;
+}
+
+.vital-trend-bar {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.trend-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.hr-fill { background: var(--color-emergency-red); }
+.ox-fill { background: var(--color-electric-blue); }
+
+.vital-tag-status {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--text-muted);
+}
+
+.home-bottom-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 3px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: var(--font-mono);
+  font-size: 0.53rem;
+  color: var(--text-secondary);
+}
+
+.strip-divider {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   11. SCREEN 02: HEALTH MONITORING STYLING
+   -------------------------------------------------------------------------- */
+.scrollable-telemetry {
+  gap: 6px;
+}
+
+.health-card {
+  background: var(--screen-card-bg);
+  border: 1px solid var(--screen-card-border-subtle);
+  border-radius: 10px;
+  padding: 5px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.param-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.param-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.param-emoji {
+  font-size: 0.72rem;
+}
+
+.param-name {
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.param-source {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--color-warning-orange);
+  background: rgba(245, 158, 11, 0.1);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.param-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.param-val-group {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.param-big-val {
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.param-unit {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.param-spark-container {
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.ppg-wave-svg, .spo2-trend-svg {
+  width: 100%;
+  max-width: 120px;
+  height: 24px;
+}
+
+.param-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 2px;
+}
+
+.status-badge-inline {
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 0.5rem;
+}
+
+.safe-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--color-safe-green);
+}
+
+/* 2-col Dual Grid for Temp & Motion */
+.health-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.health-subcard {
+  background: var(--screen-card-bg);
+  border: 1px solid var(--screen-card-border-subtle);
+  border-radius: 8px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.subcard-header {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.subcard-name {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.motion-icon {
+  width: 11px;
+  height: 11px;
+}
+
+.subcard-value {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.subcard-num {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.subcard-unit {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.motion-tag-safe {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--color-safe-green);
+}
+
+.subcard-sensor {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  color: var(--text-muted);
+}
+
+/* Mandatory Medical / Monitoring Disclaimer */
+.medical-disclaimer-card {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 6px;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.46rem;
+  font-weight: 700;
+  color: #FCD34D;
+  line-height: 1.25;
+}
+
+.disclaimer-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   12. SCREEN 03: LOCATION STYLING
+   -------------------------------------------------------------------------- */
+.location-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gnss-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--color-safe-green);
+}
+
+.gnss-lock-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-safe-green);
+  box-shadow: 0 0 5px var(--color-safe-green);
+}
+
+.gnss-accuracy-pill {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--color-electric-blue);
+  background: rgba(0, 210, 255, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Tactical Vector Radar Card */
+.tactical-radar-card {
+  background: #04070D;
+  border: 1px solid rgba(0, 210, 255, 0.25);
+  border-radius: 10px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 16px rgba(0, 210, 255, 0.08);
+}
+
+.tactical-radar-svg {
+  width: 100%;
+  height: 105px;
+}
+
+.radar-ping-anim {
+  animation: radar-blip-pulse 2s infinite ease-out;
+}
+
+@keyframes radar-blip-pulse {
+  0% { r: 3.5px; opacity: 1; }
+  100% { r: 16px; opacity: 0; }
+}
+
+/* Coordinates Card */
+.coords-data-card {
+  background: var(--screen-card-bg);
+  border: 1px solid var(--screen-card-border-subtle);
+  border-radius: 8px;
+  padding: 5px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.coord-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.coord-tag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--color-electric-blue);
+}
+
+.coord-val {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+
+.coord-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 3px;
+  margin-top: 1px;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--text-muted);
+}
+
+.location-footer-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: var(--text-secondary);
+  padding: 1px 2px;
+}
+
+.loc-link-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   13. SCREEN 04: SOS / EMERGENCY ACTIVATION STYLING
+   -------------------------------------------------------------------------- */
+.sos-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.sos-prompt-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 6px;
+  padding: 3px 6px;
+  width: 100%;
+  justify-content: center;
+}
+
+.sos-alert-icon {
+  font-size: 0.7rem;
+}
+
+.sos-prompt-text {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 800;
+  color: #FF8F9C;
+  letter-spacing: 0.04em;
+}
+
+/* 3-Second SOS Radial Trigger */
+.sos-trigger-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.sos-progress-ring-wrapper {
+  position: relative;
+  width: 95px;
+  height: 95px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sos-ring-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sos-countdown-ring {
+  transition: stroke-dashoffset 0.05s linear;
+}
+
+.sos-action-btn {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FF4D61 0%, #DC2626 60%, #991B1B 100%);
+  border: 2px solid #FFA3AE;
+  box-shadow: 
+    0 0 16px var(--color-emergency-glow),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  cursor: pointer;
+  outline: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.sos-action-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 24px var(--color-emergency-glow);
+}
+
+.sos-action-btn:active {
+  transform: scale(0.96);
+  background: #B91C1C;
+}
+
+.sos-btn-text {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.sos-btn-sub {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 700;
+  opacity: 0.9;
+  letter-spacing: 0.03em;
+  margin-top: 1px;
+}
+
+/* Visual Explanation Diagram: Wristband -> Signal -> Rover */
+.emergency-flow-card {
+  width: 100%;
+  background: rgba(16, 24, 43, 0.7);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 8px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.flow-header {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--color-electric-blue);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.flow-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1px 4px;
+}
+
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.flow-icon {
+  font-size: 0.85rem;
+}
+
+.flow-label {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.arrow-wave {
+  color: var(--color-warning-orange);
+  font-size: 0.7rem;
+  animation: pulse-dot 1s infinite;
+}
+
+.arrow-text {
+  font-family: var(--font-mono);
+  font-size: 0.44rem;
+  color: var(--color-electric-blue);
+}
+
+/* Safety Cancel Option */
+.sos-safety-cancel-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.sos-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sos-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.safety-subtext {
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   14. SCREEN 05: ROVER CONNECTION STYLING
+   -------------------------------------------------------------------------- */
+.rover-status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rover-link-state {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rover-state-text {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--color-safe-green);
+  letter-spacing: 0.06em;
+}
+
+.signal-bars-widget {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.signal-bars-widget .bar {
+  width: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 1px;
+}
+
+.bar-1 { height: 3px; }
+.bar-2 { height: 6px; }
+.bar-3 { height: 9px; }
+.bar-4 { height: 12px; }
+
+.signal-bars-widget .bar.active {
+  background: var(--color-safe-green);
+  box-shadow: 0 0 4px var(--color-safe-green);
+}
+
+/* Telemetry Wave Animation Card */
+.telemetry-anim-card {
+  background: #04070D;
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.comms-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px;
+}
+
+.comms-endpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.endpoint-icon {
+  font-size: 1rem;
+}
+
+.endpoint-name {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.comms-wave-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 32px;
+}
+
+.wave-pulse {
+  position: absolute;
+  border: 1px solid var(--color-electric-blue);
+  border-radius: 50%;
+  animation: comms-pulse 2s infinite ease-out;
+}
+
+.pulse-1 { width: 20px; height: 20px; animation-delay: 0s; }
+.pulse-2 { width: 44px; height: 32px; animation-delay: 0.6s; }
+.pulse-3 { width: 68px; height: 40px; animation-delay: 1.2s; }
+
+@keyframes comms-pulse {
+  0% { transform: scale(0.4); opacity: 0.9; }
+  100% { transform: scale(1.1); opacity: 0; }
+}
+
+.telemetry-badge {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  font-weight: 800;
+  color: var(--color-electric-blue);
+  background: rgba(7, 11, 20, 0.9);
+  padding: 1px 4px;
+  border-radius: 3px;
+  z-index: 2;
+  border: 1px solid rgba(0, 210, 255, 0.3);
+}
+
+/* Rover Specs Grid */
+.rover-specs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.rover-spec-box {
+  background: var(--screen-card-bg);
+  border: 1px solid var(--screen-card-border-subtle);
+  border-radius: 6px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.spec-label {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.spec-val-highlight {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-electric-blue);
+}
+
+.spec-val-text {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.spec-val-mono {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--color-safe-green);
+}
+
+.rover-bat-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rover-bat-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.mini-bat-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mini-bat-fill {
+  height: 100%;
+  background: var(--color-safe-green);
+  border-radius: 2px;
+}
+
+.rover-footer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(16, 24, 43, 0.6);
+  border-radius: 6px;
+  padding: 3px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vector-bearing {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.vector-arrow {
+  color: var(--color-electric-blue);
+  font-size: 0.7rem;
+}
+
+.vector-info {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.rover-mode-tag {
+  font-family: var(--font-mono);
+  font-size: 0.46rem;
+  color: var(--color-safe-green);
+  background: rgba(16, 185, 129, 0.15);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   15. SCREEN 06: EMERGENCY MODE STYLING
+   -------------------------------------------------------------------------- */
+.screen-emergency {
+  background-color: #0d0406 !important;
+  background-image: 
+    radial-gradient(circle at 50% 20%, rgba(239, 68, 68, 0.15) 0%, transparent 60%);
+}
+
+.emergency-layout {
+  gap: 5px;
+}
+
+.emergency-headline-card {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  border-radius: 8px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+  animation: headline-pulse 1.4s infinite alternate;
+}
+
+@keyframes headline-pulse {
+  0% { border-color: rgba(239, 68, 68, 0.4); }
+  100% { border-color: #EF4444; box-shadow: 0 0 16px rgba(239, 68, 68, 0.4); }
+}
+
+.emergency-siren-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.siren-icon {
+  font-size: 0.9rem;
+  animation: siren-wiggle 0.5s infinite alternate;
+}
+
+@keyframes siren-wiggle {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(8deg); }
+}
+
+.emergency-bold-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+}
+
+.emergency-trigger-meta {
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  color: #FFB3BA;
+  letter-spacing: 0.02em;
+}
+
+/* Distressed Critical Vitals Strip */
+.emergency-vitals-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background: rgba(30, 10, 15, 0.8);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.em-vital-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1px;
+}
+
+.em-vital-icon {
+  font-size: 0.7rem;
+}
+
+.em-vital-data {
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+
+.em-vital-val {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #FF5C6E;
+  line-height: 1;
+}
+
+.em-vital-unit {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.em-tag-alert {
+  font-family: var(--font-mono);
+  font-size: 0.42rem;
+  font-weight: 800;
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.2);
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+/* Actions Taken List */
+.emergency-actions-card {
+  background: rgba(16, 24, 43, 0.7);
+  border: 1px solid rgba(0, 210, 255, 0.15);
+  border-radius: 8px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.action-check-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.check-icon-svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.action-text {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.transmission-broadcast-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 210, 255, 0.1);
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-top: 1px;
+}
+
+.signal-ping-circle {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-electric-blue);
+  box-shadow: 0 0 6px var(--color-electric-blue);
+  animation: pulse-dot 0.7s infinite;
+}
+
+.broadcast-text {
+  font-family: var(--font-mono);
+  font-size: 0.46rem;
+  color: var(--color-electric-blue);
+  font-weight: 600;
+}
+
+/* Rover ACK Status Box */
+.ack-status-box {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 8px;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ack-top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ack-check {
+  color: var(--color-safe-green);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.ack-title {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  font-weight: 800;
+  color: #34D399;
+}
+
+.ack-eta {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  color: #FFFFFF;
+}
+
+.ack-eta strong {
+  color: var(--color-electric-blue);
+  font-weight: 800;
+}
+
+/* --------------------------------------------------------------------------
+   16. INTERACTIVE SIMULATOR MODE
+   -------------------------------------------------------------------------- */
+.interactive-simulator {
+  display: none;
+}
+
+.interactive-simulator.active {
+  display: block;
+}
+
+.sim-wrapper {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1100px) {
+  .sim-wrapper {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.sim-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sim-panel-card {
+  background: rgba(16, 24, 43, 0.75);
+  border: 1px solid var(--bg-presentation-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  backdrop-filter: blur(12px);
+}
+
+.sim-panel-card h4 {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-electric-blue);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.sim-panel-card p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.sim-screen-btn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.sim-screen-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.sim-screen-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-electric-blue);
+}
+
+.sim-screen-btn.active {
+  background: rgba(0, 210, 255, 0.15);
+  border-color: var(--color-electric-blue);
+  color: #FFFFFF;
+}
+
+.sim-screen-btn .badge-num {
+  font-size: 0.65rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: var(--color-electric-blue);
+}
+
+.sim-screen-btn.alert-screen-btn.active {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #EF4444;
+}
+
+.sim-screen-btn.alert-screen-btn .badge-num {
+  color: #FF8F9C;
+}
+
+/* Sensor Sliders */
+.sim-controls-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ctrl-group label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+.range-with-val {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.range-with-val input[type="range"] {
+  flex: 1;
+  accent-color: var(--color-electric-blue);
+}
+
+.range-with-val span {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  min-width: 55px;
+}
+
+/* Center Simulator Watch Stage */
+.sim-watch-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.sim-navigation-arrows {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.arrow-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(16, 24, 43, 0.8);
+  border: 1px solid var(--bg-presentation-border);
+  color: #FFFFFF;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.arrow-btn:hover {
+  border-color: var(--color-electric-blue);
+  color: var(--color-electric-blue);
+  box-shadow: 0 0 10px var(--color-blue-glow);
+}
+
+.active-screen-indicator-text {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.smartwatch-casing.casing-interactive {
+  transform: scale(1.15);
+  margin: 1.5rem 0;
+}
+
+.smartwatch-casing.casing-interactive:hover {
+  transform: scale(1.15) translateY(-2px);
+}
+
+.watch-tactile-help {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  background: rgba(0, 210, 255, 0.08);
+  border: 1px solid rgba(0, 210, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 380px;
+}
+
+.watch-tactile-help strong {
+  color: var(--color-electric-blue);
+}
+
+/* Protocol Status List (Right Panel) */
+.protocol-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.proto-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.proto-key {
+  color: var(--text-muted);
+}
+
+.proto-val {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.proto-val.text-safe {
+  color: var(--color-safe-green);
+}
+
+.sim-btn-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sim-action-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.sim-action-btn.red-btn {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #FFA3AE;
+}
+
+.sim-action-btn.red-btn:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  box-shadow: 0 0 14px var(--color-emergency-glow);
+}
+
+.sim-action-btn.neutral-btn {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #6EE7B7;
+}
+
+.sim-action-btn.neutral-btn:hover {
+  background: var(--color-safe-green);
+  color: #050811;
+}
+
+.sim-action-btn.outline-btn {
+  background: transparent;
+  border-color: var(--bg-presentation-border);
+  color: var(--text-secondary);
+}
+
+.sim-action-btn.outline-btn:hover {
+  border-color: var(--color-electric-blue);
+  color: #FFFFFF;
+}
+
+/* --------------------------------------------------------------------------
+   17. PRESENTATION FOOTER
+   -------------------------------------------------------------------------- */
+.pres-footer {
+  background: #04060c;
+  border-top: 1px solid var(--bg-presentation-border);
+  margin-top: 4rem;
+  padding: 3rem 2rem 2rem;
+}
+
+.footer-inner {
+  max-width: 1720px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 1024px) {
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.footer-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 0.6rem;
+}
+
+.footer-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.footer-heading {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--color-electric-blue);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.spec-bullet-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.spec-bullet-list li strong {
+  color: #FFFFFF;
+}
+
+.token-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   18. DYNAMIC THRESHOLD STATES & EMERGENCY TRIGGER STYLING
+   -------------------------------------------------------------------------- */
+
+/* Interactive Clickable Cards on Watch Screen */
+.interactive-viewport .vital-mini-card,
+.interactive-viewport .health-card,
+.interactive-viewport .health-subcard,
+.interactive-viewport .status-pill,
+.interactive-viewport .home-bottom-strip {
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.interactive-viewport .vital-mini-card:hover,
+.interactive-viewport .health-card:hover,
+.interactive-viewport .health-subcard:hover {
+  transform: translateY(-1px) scale(1.02);
+  border-color: var(--color-electric-blue);
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.25);
+}
+
+/* Dynamic State: SAFE */
+.vital-mini-card.state-safe,
+.health-card.state-safe,
+.health-subcard.state-safe {
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+/* Dynamic State: WARNING (Amber / Orange) */
+.vital-mini-card.state-warning,
+.health-card.state-warning,
+.health-subcard.state-warning {
+  border-color: #F59E0B !important;
+  background: rgba(245, 158, 11, 0.16) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3) !important;
+  animation: card-warning-pulse 1.8s infinite alternate ease-in-out;
+}
+
+.vital-mini-card.state-warning .num-large,
+.health-card.state-warning .param-big-val,
+.health-subcard.state-warning .subcard-num {
+  color: #FCD34D !important;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.vital-mini-card.state-warning .vital-tag-status,
+.health-subcard.state-warning .subcard-sensor {
+  color: #FBBF24 !important;
+  font-weight: 800;
+}
+
+@keyframes card-warning-pulse {
+  0% { border-color: rgba(245, 158, 11, 0.5); }
+  100% { border-color: #F59E0B; box-shadow: 0 0 16px rgba(245, 158, 11, 0.45); }
+}
+
+/* Dynamic State: CRITICAL EMERGENCY (Red) */
+.vital-mini-card.state-critical,
+.health-card.state-critical,
+.health-subcard.state-critical {
+  border-color: #EF4444 !important;
+  background: rgba(239, 68, 68, 0.22) !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.45) !important;
+  animation: card-critical-pulse 1.1s infinite alternate ease-in-out;
+}
+
+.vital-mini-card.state-critical .num-large,
+.health-card.state-critical .param-big-val,
+.health-subcard.state-critical .subcard-num {
+  color: #FF6B7A !important;
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
+}
+
+.vital-mini-card.state-critical .vital-tag-status,
+.health-subcard.state-critical .subcard-sensor {
+  color: #FFA3AE !important;
+  font-weight: 800;
+}
+
+@keyframes card-critical-pulse {
+  0% { transform: scale(1); border-color: rgba(239, 68, 68, 0.5); }
+  100% { transform: scale(1.02); border-color: #EF4444; box-shadow: 0 0 22px rgba(239, 68, 68, 0.65); }
+}
+
+/* Dynamic Status Pills on Watch Screen */
+.status-pill.status-pill-warning {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid #F59E0B;
+  color: #FCD34D;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+}
+
+.status-pill.status-pill-critical {
+  background: rgba(239, 68, 68, 0.25);
+  border: 1px solid #EF4444;
+  color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.55);
+  animation: pulse-dot 0.8s infinite;
+}
+
+.amber-beacon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F59E0B;
+  box-shadow: 0 0 6px #F59E0B;
+}
+
+.red-beacon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 8px #EF4444;
+  animation: pulse-dot 0.7s infinite;
+}
+
+/* In-Watch Threshold Breach Overlay Notification */
+.watch-threshold-alert-overlay {
+  position: absolute;
+  top: 30px;
+  left: 8px;
+  right: 8px;
+  background: rgba(20, 4, 7, 0.94);
+  border: 2px solid #EF4444;
+  border-radius: 12px;
+  padding: 8px;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85), 0 0 20px rgba(239, 68, 68, 0.45);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  animation: alert-slide-down 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes alert-slide-down {
+  0% { transform: translateY(-20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.alert-overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.alert-overlay-icon {
+  font-size: 0.85rem;
+}
+
+.alert-overlay-title {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+}
+
+.alert-overlay-body {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  color: #FFA3AE;
+  line-height: 1.35;
+  background: rgba(239, 68, 68, 0.15);
+  padding: 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.alert-overlay-countdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--color-electric-blue);
+  font-weight: 700;
+}
+
+.alert-overlay-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.overlay-btn {
+  flex: 1;
+  padding: 4px 6px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.overlay-btn-dismiss {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.overlay-btn-dismiss:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.overlay-btn-escalate {
+  background: #EF4444;
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.overlay-btn-escalate:hover {
+  background: #DC2626;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+}
+
+/* Threshold Preset Buttons in Left Panel */
+.preset-btn-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.preset-chip-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.preset-chip-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--color-electric-blue);
+  transform: translateX(2px);
+}
+
+.preset-chip-btn.preset-safe:hover {
+  border-color: var(--color-safe-green);
+}
+
+.preset-chip-btn.preset-warning:hover {
+  border-color: var(--color-warning-orange);
+}
+
+.preset-chip-btn.preset-critical:hover {
+  border-color: var(--color-emergency-red);
+}
+
+.preset-label-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.preset-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dot-safe { background: var(--color-safe-green); box-shadow: 0 0 4px var(--color-safe-green); }
+.dot-warning { background: var(--color-warning-orange); box-shadow: 0 0 4px var(--color-warning-orange); }
+.dot-critical { background: var(--color-emergency-red); box-shadow: 0 0 4px var(--color-emergency-red); }
+
+.preset-values {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+/* Fall Trigger Button */
+.fall-trigger-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-radius: 6px;
+  color: #FFA3AE;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.fall-trigger-btn:hover {
+  background: var(--color-emergency-red);
+  color: #FFFFFF;
+  box-shadow: 0 0 16px var(--color-emergency-glow);
+}
+
+/* Audio Toggle Toolbar Button */
+.toolbar-btn.audio-btn {
+  background: rgba(16, 24, 43, 0.7);
+  border-color: var(--bg-presentation-border);
+}
+
+.toolbar-btn.audio-btn.audio-active {
+  border-color: var(--color-electric-blue);
+  color: var(--color-electric-blue);
+}
+
+/* Tactical Audio FX Grid & Buttons */
+.sound-fx-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+}
+
+.sound-chip-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.sound-chip-btn:hover {
+  background: rgba(0, 210, 255, 0.12);
+  border-color: var(--color-electric-blue);
+  color: #FFFFFF;
+  transform: translateX(2px);
+  box-shadow: 0 0 8px rgba(0, 210, 255, 0.2);
+}
+
+.sound-chip-btn:active {
+  transform: scale(0.98);
+}
+
+/* Server Telemetry Uplink Pill */
+.server-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.server-status-pill.online {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #10B981;
+}
+
+.server-status-pill.online .pulse-indicator {
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+}
+
+.server-status-pill.offline {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #F59E0B;
+}
+
+.server-status-pill.offline .pulse-indicator {
+  background: #F59E0B;
+}
+
+.server-status-pill.emergency {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #EF4444;
+  color: #EF4444;
+  animation: alert-border-pulse 1s infinite alternate;
+}
+
+

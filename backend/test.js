@@ -37,6 +37,14 @@ function makeRequest(path, method = 'GET', body = null) {
 
 async function runTests() {
   try {
+    console.log('Testing HEAD / (Render deployment health check)...');
+    const head = await makeRequest('/', 'HEAD');
+    console.log('✓ HEAD /:', head.status);
+
+    console.log('Testing GET /...');
+    const root = await makeRequest('/', 'GET');
+    console.log('✓ GET /:', root.status);
+
     console.log('Testing GET /api/health...');
     const health = await makeRequest('/api/health');
     console.log('✓ /api/health:', health.status, health.data.status);

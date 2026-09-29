@@ -12,8 +12,9 @@ ENV PORT=5000
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Copy application source code
+# Copy application source code and bundled frontend static assets
 COPY src/ ./src/
+COPY public/ ./public/
 
 # Expose API and WebSocket port
 EXPOSE 5000

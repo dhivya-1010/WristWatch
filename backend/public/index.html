@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAKSHAROVER Wearable UI Prototype | Autonomous Rescue Telemetry System</title>
+  <meta name="description" content="High-fidelity smartwatch UI/UX prototype for RAKSHAROVER autonomous rescue system. Disaster environment wearable telemetry interface with 6 core screens.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+
+  <!-- TOP PRESENTATION HEADER -->
+  <header class="pres-header">
+    <div class="pres-header-inner">
+      <div class="pres-brand">
+        <div class="brand-badge">
+          <svg class="brand-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+            <path d="M12 8v8m-4-4h8" stroke="#00D2FF" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          <div class="brand-text-group">
+            <div class="brand-super">DEFENCE & DISASTER SEARCH & RESCUE • TACTICAL TELEMETRY</div>
+            <h1 class="brand-title">RAKSHA<span>ROVER</span></h1>
+          </div>
+        </div>
+        <div class="brand-tagline">Autonomous Ground Rover & Personnel Wearable Ecosystem • Model W-01</div>
+      </div>
+
+      <!-- PRESENTATION TOOLBAR CONTROLS -->
+      <div class="pres-toolbar">
+        <div class="view-switch-group" role="tablist" aria-label="Display Mode">
+          <button id="viewModeInteractive" class="toolbar-btn active" role="tab" aria-selected="true" title="Interactive Wearable Live Simulator">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+            </svg>
+            <span>Live Interactive Unit</span>
+          </button>
+          <button id="viewModeAll" class="toolbar-btn" role="tab" aria-selected="false" title="View all 6 screens side-by-side">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path d="M3 4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm7 0a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2a1 1 0 01-1-1V4zm7 0a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2a1 1 0 01-1-1V4zm-14 8a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm7 0a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2a1 1 0 01-1-1v-4zm7 0a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2a1 1 0 01-1-1v-4z"/>
+            </svg>
+            <span>6-Screen Grid</span>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <button id="toggleAudioBtn" class="toolbar-btn audio-btn audio-active" title="Toggle Tactical Audio Feedback">
+          <span id="audioIcon">🔊</span>
+          <span id="audioLabel">Sound: ON</span>
+        </button>
+
+        <button id="toggleChassisBtn" class="toolbar-btn secondary" title="Toggle rugged titanium case bezel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <rect x="5" y="2" width="14" height="20" rx="4"/>
+            <path d="M12 18h.01"/>
+          </svg>
+          <span id="chassisBtnLabel">Bezel: Rugged</span>
+        </button>
+
+        <button id="toggleHardwareDrawer" class="toolbar-btn secondary" title="View Hardware Sensors & ESP32-C3 Specs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M18 10h4M2 10h4m12 4h4M2 14h4m6-12v4m0 12v4M6 6h12a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z"/>
+          </svg>
+          <span>Hardware Mapping</span>
+        </button>
+
+        <button id="triggerEmergencyDemo" class="toolbar-btn alert-trigger" title="Simulate Emergency Trigger">
+          <span class="pulse-indicator"></span>
+          <span>Simulate SOS</span>
+        </button>
+
+        <div id="serverStatusBadge" class="server-status-pill offline" title="Tactical Telemetry Server Uplink Status (Click to Reconnect)">
+          <span class="pulse-indicator"></span>
+          <span id="serverStatusText">API: STANDALONE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPEC & COLOR PALETTE SUB-BANNER -->
+    <div class="pres-subbar">
+      <div class="palette-chips">
+        <span class="palette-chip chip-dark"><span class="chip-color" style="background:#070B14"></span>#070B14 Primary Dark</span>
+        <span class="palette-chip chip-blue"><span class="chip-color" style="background:#00D2FF"></span>#00D2FF Electric Blue (Accent)</span>
+        <span class="palette-chip chip-green"><span class="chip-color" style="background:#10B981"></span>#10B981 Safe / Connected</span>
+        <span class="palette-chip chip-orange"><span class="chip-color" style="background:#F59E0B"></span>#F59E0B Warning / Telemetry</span>
+        <span class="palette-chip chip-red"><span class="chip-color" style="background:#EF4444"></span>#EF4444 Emergency / Alert</span>
+      </div>
+      <div class="display-specs">
+        <span class="spec-item">AMOLED 1.78" Retina (368×448 px)</span>
+        <span class="spec-divider">•</span>
+        <span class="spec-item">ESP32-C3 Controller</span>
+        <span class="spec-divider">•</span>
+        <span class="spec-item">LoRa 868MHz Mesh Telemetry</span>
+        <span class="spec-divider">•</span>
+        <span class="spec-item">IP68 Tactical Enclosure</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- HARDWARE & SENSOR MAPPING DRAWER (COLLAPSIBLE) -->
+  <section id="hardwareDrawer" class="hardware-drawer collapsed" aria-label="Hardware Architecture">
+    <div class="drawer-inner">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span class="badge-tech">HARDWARE ARCHITECTURE</span>
+          <h3>Wearable Hardware Sensor-to-UI Mapping Pipeline</h3>
+        </div>
+        <button id="closeDrawerBtn" class="drawer-close" aria-label="Close drawer">✕</button>
+      </div>
+      <div class="sensor-grid">
+        <div class="sensor-card">
+          <div class="sensor-id">IC 01 • I2C BUS</div>
+          <div class="sensor-chip">MAX30102</div>
+          <div class="sensor-role">High-Sensitivity Pulse Oximeter & Heart-Rate Sensor</div>
+          <div class="sensor-ui-map">
+            <span class="map-arrow">➔</span> Maps to: <strong>Heart Rate (BPM)</strong> & <strong>SpO₂ (Oxygen Saturation %)</strong> on Screen 01, 02, 06.
+          </div>
+          <div class="sensor-telemetry">Sampling: 100Hz • Red + IR LEDs • Low-Noise PPG Waveform</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-id">IC 02 • I2C BUS</div>
+          <div class="sensor-chip">MLX90614</div>
+          <div class="sensor-role">Medical-Grade Infrared Thermopile Sensor</div>
+          <div class="sensor-ui-map">
+            <span class="map-arrow">➔</span> Maps to: <strong>Body Temperature (36.7°C / 37.9°C)</strong> on Screen 01, 02, 06.
+          </div>
+          <div class="sensor-telemetry">Contactless Thermometry • Resolution: 0.02°C • 17-bit ADC</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-id">IC 03 • SPI BUS</div>
+          <div class="sensor-chip">LSM6DSOX</div>
+          <div class="sensor-role">6-DoF Inertial Measurement Unit (IMU) + Machine Learning Core</div>
+          <div class="sensor-ui-map">
+            <span class="map-arrow">➔</span> Maps to: <strong>Motion Status (NORMAL / FALL DETECTED)</strong> on Screen 02.
+          </div>
+          <div class="sensor-telemetry">3D Accel + 3D Gyro • Edge ML Fall Detection Algorithm</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-id">IC 04 • UART BUS</div>
+          <div class="sensor-chip">u-blox MAX-M10S</div>
+          <div class="sensor-role">Ultra-Low Power Concurrent GNSS Receiver</div>
+          <div class="sensor-ui-map">
+            <span class="map-arrow">➔</span> Maps to: <strong>GNSS Coordinates, Accuracy & Radar Vector</strong> on Screen 01, 03, 06.
+          </div>
+          <div class="sensor-telemetry">GPS / GLONASS / Galileo / BeiDou • Sub-meter Super-S accuracy</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-id">MCU • SYSTEM CORE</div>
+          <div class="sensor-chip">ESP32-C3 RISC-V</div>
+          <div class="sensor-role">32-Bit Microcontroller + 2.4GHz BLE + LoRa SX1262 Transceiver</div>
+          <div class="sensor-ui-map">
+            <span class="map-arrow">➔</span> Maps to: <strong>Rover Telemetry, Link Status & Long-Range Packet Dispatch</strong> on Screen 04, 05, 06.
+          </div>
+          <div class="sensor-telemetry">160MHz Clock • AES-256 Encrypted Telemetry • Mesh Forwarding</div>
+        </div>
+
+        <div class="sensor-card">
+          <div class="sensor-id">TACTILE INPUT • GPIO INTR</div>
+          <div class="sensor-chip">TACTICAL SOS BUTTON</div>
+          <div class="sensor-role">IP68 Hermetically Sealed Safety Switch with Hardware Debounce</div>
+          <div class="sensor-ui-map">
+            <span class="map-arrow">➔</span> Maps to: <strong>Screen 04 (3-Second Hold Trigger)</strong> & Direct Hardware Panic Interrupt.
+          </div>
+          <div class="sensor-telemetry">Active-Low Interrupt • Deep-Sleep Wakeup • Fail-safe Redundancy</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN PRESENTATION STAGE -->
+  <main class="presentation-stage">
+
+    <!-- SIDE-BY-SIDE PRESENTATION VIEW (ALL 6 SCREENS) -->
+    <div id="screensShowcase" class="screens-showcase">
+      <div class="screens-row">
+
+        <!-- ==============================================
+             SCREEN 01: HOME / VITAL STATUS
+             ============================================== -->
+        <div class="screen-presentation-col" data-screen-index="0">
+          <div class="col-meta">
+            <span class="col-number">01</span>
+            <span class="col-title">HOME</span>
+            <span class="col-subtitle">VITAL STATUS OVERVIEW</span>
+          </div>
+
+          <!-- SMARTWATCH CASING CHASSIS -->
+          <div class="smartwatch-casing">
+            <div class="case-lug lug-top"></div>
+            <div class="case-body">
+              <div class="case-screw screw-tl"></div>
+              <div class="case-screw screw-tr"></div>
+              <div class="case-screw screw-bl"></div>
+              <div class="case-screw screw-br"></div>
+              <div class="case-crown"></div>
+              <div class="case-sos-guard">
+                <div class="case-sos-button"></div>
+              </div>
+
+              <!-- SCREEN VIEWPORT (1.78" AMOLED PROPORTION) -->
+              <div class="screen-viewport screen-home" id="screenHome">
+                
+                <!-- TOP STATUS BAR -->
+                <div class="wearable-status-bar">
+                  <div class="status-left">
+                    <span class="brand-mini">RAKSHA</span>
+                    <span class="status-indicator-dot safe-dot"></span>
+                  </div>
+                  <div class="status-center">
+                    <span class="status-clock live-clock">14:38:05</span>
+                  </div>
+                  <div class="status-right">
+                    <!-- GNSS lock icon -->
+                    <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="#00D2FF" stroke-width="2">
+                      <circle cx="12" cy="12" r="9"/>
+                      <circle cx="12" cy="12" r="3" fill="#00D2FF"/>
+                      <path d="M12 3v3m0 12v3M3 12h3m12 0h3"/>
+                    </svg>
+                    <!-- Battery Pill -->
+                    <div class="battery-pill" title="Battery 88%">
+                      <div class="battery-level" style="width: 88%;"></div>
+                      <span class="battery-text">88%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SCREEN CONTENT -->
+                <div class="screen-content">
+                  <!-- PRIMARY BRAND & SYSTEM BADGE -->
+                  <div class="system-badge-row">
+                    <div class="system-tag">AUTONOMOUS RESCUE UNIT</div>
+                    <div class="status-pill status-pill-safe">
+                      <span class="pulsing-beacon green-beacon"></span>
+                      <span class="status-label">SAFE</span>
+                    </div>
+                  </div>
+
+                  <!-- TIME HERO -->
+                  <div class="hero-time-card">
+                    <div class="time-large live-time-large">14:38</div>
+                    <div class="time-sub">
+                      <span class="time-sec live-seconds">:05</span>
+                      <span class="time-tz">UTC+05:30 • OPS TACTICAL</span>
+                    </div>
+                  </div>
+
+                  <!-- 2x2 VITALS QUICK-GLANCE METRIC GRID -->
+                  <div class="vitals-quick-grid">
+                    <!-- Metric: Heart Rate -->
+                    <div class="vital-mini-card">
+                      <div class="vital-mini-header">
+                        <svg class="vital-glyph heart-glyph" viewBox="0 0 24 24" fill="#EF4444">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span class="vital-label">HEART RATE</span>
+                      </div>
+                      <div class="vital-mini-value">
+                        <span class="num-large val-hr">82</span>
+                        <span class="unit-text">BPM</span>
+                      </div>
+                      <div class="vital-trend-bar">
+                        <div class="trend-fill hr-fill" style="width: 68%;"></div>
+                      </div>
+                    </div>
+
+                    <!-- Metric: SpO2 -->
+                    <div class="vital-mini-card">
+                      <div class="vital-mini-header">
+                        <svg class="vital-glyph ox-glyph" viewBox="0 0 24 24" fill="#00D2FF">
+                          <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>
+                        </svg>
+                        <span class="vital-label">SpO₂</span>
+                      </div>
+                      <div class="vital-mini-value">
+                        <span class="num-large val-spo2">97</span>
+                        <span class="unit-text">%</span>
+                      </div>
+                      <div class="vital-trend-bar">
+                        <div class="trend-fill ox-fill" style="width: 97%;"></div>
+                      </div>
+                    </div>
+
+                    <!-- Metric: Body Temperature -->
+                    <div class="vital-mini-card">
+                      <div class="vital-mini-header">
+                        <svg class="vital-glyph temp-glyph" viewBox="0 0 24 24" fill="#F59E0B">
+                          <path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/>
+                        </svg>
+                        <span class="vital-label">BODY TEMP</span>
+                      </div>
+                      <div class="vital-mini-value">
+                        <span class="num-large val-temp">36.7</span>
+                        <span class="unit-text">°C</span>
+                      </div>
+                      <div class="vital-tag-status">NORMOTHERMIC</div>
+                    </div>
+
+                    <!-- Metric: GPS & Location -->
+                    <div class="vital-mini-card">
+                      <div class="vital-mini-header">
+                        <svg class="vital-glyph gps-glyph" viewBox="0 0 24 24" fill="#10B981">
+                          <circle cx="12" cy="12" r="3"/>
+                          <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z"/>
+                        </svg>
+                        <span class="vital-label">GNSS</span>
+                      </div>
+                      <div class="vital-mini-value">
+                        <span class="text-status-green">ACTIVE</span>
+                      </div>
+                      <div class="vital-tag-status">3D FIX • 14 SAT</div>
+                    </div>
+                  </div>
+
+                  <!-- BOTTOM QUICK STRIP -->
+                  <div class="home-bottom-strip">
+                    <span class="strip-item">ROVER: RAKSHA-01 LINKED</span>
+                    <span class="strip-divider">|</span>
+                    <span class="strip-item">BATTERY: 88%</span>
+                  </div>
+                </div>
+
+                <!-- NAVIGATION DOTS (SCREEN 1 ACTIVE) -->
+                <div class="wearable-nav-dots">
+                  <span class="nav-dot active"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                </div>
+              </div>
+            </div>
+            <div class="case-lug lug-bottom"></div>
+          </div>
+          <div class="screen-caption">01 HOME • Vitals Overview & System Status</div>
+        </div>
+
+        <!-- ==============================================
+             SCREEN 02: HEALTH MONITORING
+             ============================================== -->
+        <div class="screen-presentation-col" data-screen-index="1">
+          <div class="col-meta">
+            <span class="col-number">02</span>
+            <span class="col-title">HEALTH</span>
+            <span class="col-subtitle">PHYSIOLOGICAL TELEMETRY</span>
+          </div>
+
+          <div class="smartwatch-casing">
+            <div class="case-lug lug-top"></div>
+            <div class="case-body">
+              <div class="case-screw screw-tl"></div>
+              <div class="case-screw screw-tr"></div>
+              <div class="case-screw screw-bl"></div>
+              <div class="case-screw screw-br"></div>
+              <div class="case-crown"></div>
+              <div class="case-sos-guard"><div class="case-sos-button"></div></div>
+
+              <div class="screen-viewport screen-health" id="screenHealth">
+                <!-- TOP STATUS BAR -->
+                <div class="wearable-status-bar">
+                  <div class="status-left">
+                    <span class="screen-title-tag">HEALTH</span>
+                  </div>
+                  <div class="status-center">
+                    <span class="status-clock live-clock">14:38:05</span>
+                  </div>
+                  <div class="status-right">
+                    <div class="battery-pill"><div class="battery-level" style="width: 88%;"></div><span class="battery-text">88%</span></div>
+                  </div>
+                </div>
+
+                <div class="screen-content scrollable-telemetry">
+                  <!-- PARAMETER 1: HEART RATE WITH REAL-TIME ECG/PPG GRAPH -->
+                  <div class="health-card">
+                    <div class="param-top">
+                      <div class="param-title">
+                        <span class="param-emoji">❤️</span>
+                        <span class="param-name">Heart Rate</span>
+                      </div>
+                      <div class="param-source">MAX30102</div>
+                    </div>
+                    <div class="param-body">
+                      <div class="param-val-group">
+                        <span class="param-big-val val-hr">82</span>
+                        <span class="param-unit">BPM</span>
+                      </div>
+                      <div class="param-spark-container">
+                        <svg class="ppg-wave-svg" viewBox="0 0 140 32" preserveAspectRatio="none">
+                          <path class="wave-bg" d="M0 16 L20 16 L25 10 L30 22 L35 4 L40 28 L45 16 L70 16 L75 10 L80 22 L85 4 L90 28 L95 16 L120 16 L125 10 L130 22 L135 4 L140 16" fill="none" stroke="rgba(239, 68, 68, 0.25)" stroke-width="1.8"/>
+                          <path class="wave-live live-ecg-path" d="M0 16 L20 16 L25 10 L30 22 L35 4 L40 28 L45 16 L70 16 L75 10 L80 22 L85 4 L90 28 L95 16 L120 16 L125 10 L130 22 L135 4 L140 16" fill="none" stroke="#EF4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="param-footer">
+                      <span class="range-indicator">Rhythm: Sinus Regular</span>
+                      <span class="status-badge-inline safe-badge">NORMAL</span>
+                    </div>
+                  </div>
+
+                  <!-- PARAMETER 2: SpO2 WITH AREA GRAPH -->
+                  <div class="health-card">
+                    <div class="param-top">
+                      <div class="param-title">
+                        <span class="param-emoji">🫁</span>
+                        <span class="param-name">SpO₂ Saturation</span>
+                      </div>
+                      <div class="param-source">MAX30102</div>
+                    </div>
+                    <div class="param-body">
+                      <div class="param-val-group">
+                        <span class="param-big-val val-spo2">97</span>
+                        <span class="param-unit">%</span>
+                      </div>
+                      <div class="param-spark-container">
+                        <svg class="spo2-trend-svg" viewBox="0 0 140 28" preserveAspectRatio="none">
+                          <linearGradient id="spo2Grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#00D2FF" stop-opacity="0.5"/>
+                            <stop offset="100%" stop-color="#00D2FF" stop-opacity="0.0"/>
+                          </linearGradient>
+                          <path d="M0 14 Q20 10, 40 12 T80 8 T120 10 L140 9 L140 28 L0 28 Z" fill="url(#spo2Grad)"/>
+                          <path d="M0 14 Q20 10, 40 12 T80 8 T120 10 L140 9" fill="none" stroke="#00D2FF" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="param-footer">
+                      <span class="range-indicator">Target: 95 - 100%</span>
+                      <span class="status-badge-inline safe-badge">OPTIMAL</span>
+                    </div>
+                  </div>
+
+                  <!-- PARAMETER 3: BODY TEMPERATURE & MOTION IN 2-COL -->
+                  <div class="health-dual-grid">
+                    <div class="health-subcard">
+                      <div class="subcard-header">
+                        <span class="param-emoji">🌡</span>
+                        <span class="subcard-name">Body Temp</span>
+                      </div>
+                      <div class="subcard-value">
+                        <span class="subcard-num val-temp">36.7</span>
+                        <span class="subcard-unit">°C</span>
+                      </div>
+                      <div class="subcard-sensor">MLX90614 IR</div>
+                    </div>
+
+                    <div class="health-subcard">
+                      <div class="subcard-header">
+                        <svg class="motion-icon" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                          <circle cx="12" cy="5" r="2"/>
+                          <path d="M10 22v-5l-2-3 4-2 3 3v7m-3-12l2 3"/>
+                        </svg>
+                        <span class="subcard-name">Motion</span>
+                      </div>
+                      <div class="subcard-value">
+                        <span class="motion-tag-safe">NORMAL</span>
+                      </div>
+                      <div class="subcard-sensor">LSM6DSOX IMU</div>
+                    </div>
+                  </div>
+
+                  <!-- MANDATORY CLINICAL / MONITORING DISCLAIMER -->
+                  <div class="medical-disclaimer-card">
+                    <svg viewBox="0 0 20 20" fill="#F59E0B" class="disclaimer-icon">
+                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>MONITORING DATA ONLY • NOT A MEDICAL DIAGNOSIS</span>
+                  </div>
+                </div>
+
+                <!-- NAVIGATION DOTS (SCREEN 2 ACTIVE) -->
+                <div class="wearable-nav-dots">
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot active"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                </div>
+              </div>
+            </div>
+            <div class="case-lug lug-bottom"></div>
+          </div>
+          <div class="screen-caption">02 HEALTH • MAX30102 + MLX90614 + LSM6DSOX</div>
+        </div>
+
+        <!-- ==============================================
+             SCREEN 03: LOCATION
+             ============================================== -->
+        <div class="screen-presentation-col" data-screen-index="2">
+          <div class="col-meta">
+            <span class="col-number">03</span>
+            <span class="col-title">LOCATION</span>
+            <span class="col-subtitle">TACTICAL GNSS LOCALIZATION</span>
+          </div>
+
+          <div class="smartwatch-casing">
+            <div class="case-lug lug-top"></div>
+            <div class="case-body">
+              <div class="case-screw screw-tl"></div>
+              <div class="case-screw screw-tr"></div>
+              <div class="case-screw screw-bl"></div>
+              <div class="case-screw screw-br"></div>
+              <div class="case-crown"></div>
+              <div class="case-sos-guard"><div class="case-sos-button"></div></div>
+
+              <div class="screen-viewport screen-location" id="screenLocation">
+                <!-- TOP STATUS BAR -->
+                <div class="wearable-status-bar">
+                  <div class="status-left">
+                    <span class="screen-title-tag">LOCATION</span>
+                  </div>
+                  <div class="status-center">
+                    <span class="status-clock live-clock">14:38:05</span>
+                  </div>
+                  <div class="status-right">
+                    <div class="battery-pill"><div class="battery-level" style="width: 88%;"></div><span class="battery-text">88%</span></div>
+                  </div>
+                </div>
+
+                <div class="screen-content">
+                  <!-- GNSS FIX STATUS BADGE -->
+                  <div class="location-top-bar">
+                    <div class="gnss-status-badge">
+                      <span class="gnss-lock-dot"></span>
+                      <span class="gnss-lock-text">GPS: ACTIVE (3D FIX)</span>
+                    </div>
+                    <div class="gnss-accuracy-pill">
+                      <span>±1.4 m</span>
+                    </div>
+                  </div>
+
+                  <!-- TACTICAL RADAR / SIMPLIFIED VECTOR MAP -->
+                  <div class="tactical-radar-card">
+                    <svg class="tactical-radar-svg" viewBox="0 0 200 130">
+                      <!-- Grid rings -->
+                      <circle cx="100" cy="65" r="55" fill="none" stroke="rgba(0, 210, 255, 0.15)" stroke-width="1" stroke-dasharray="3,3"/>
+                      <circle cx="100" cy="65" r="35" fill="none" stroke="rgba(0, 210, 255, 0.2)" stroke-width="1"/>
+                      <circle cx="100" cy="65" r="15" fill="none" stroke="rgba(0, 210, 255, 0.3)" stroke-width="1"/>
+                      <!-- Crosshairs -->
+                      <line x1="100" y1="5" x2="100" y2="125" stroke="rgba(0, 210, 255, 0.2)" stroke-width="1"/>
+                      <line x1="15" y1="65" x2="185" y2="65" stroke="rgba(0, 210, 255, 0.2)" stroke-width="1"/>
+                      <!-- Cardinal markers -->
+                      <text x="100" y="14" fill="#00D2FF" font-size="9" font-family="'JetBrains Mono', monospace" text-anchor="middle" font-weight="700">N</text>
+                      <text x="180" y="68" fill="rgba(255,255,255,0.4)" font-size="8" font-family="'JetBrains Mono', monospace">E</text>
+                      <!-- Terrain contours simplified -->
+                      <path d="M30 110 Q 70 80, 110 95 T 180 70" fill="none" stroke="rgba(0, 210, 255, 0.25)" stroke-width="1"/>
+                      <path d="M20 50 Q 60 40, 90 25 T 160 35" fill="none" stroke="rgba(0, 210, 255, 0.18)" stroke-width="1"/>
+                      <!-- Range label -->
+                      <text x="104" y="34" fill="rgba(255,255,255,0.4)" font-size="7" font-family="'JetBrains Mono', monospace">100m</text>
+                      <!-- Rover RAKSHA-01 marker (Target) -->
+                      <g class="rover-radar-target" transform="translate(135, 42)">
+                        <circle cx="0" cy="0" r="4.5" fill="#10B981"/>
+                        <circle cx="0" cy="0" r="9" fill="none" stroke="#10B981" stroke-width="1.2" opacity="0.6"/>
+                        <text x="7" y="3" fill="#10B981" font-size="7.5" font-family="'JetBrains Mono', monospace" font-weight="700">RAKSHA-01</text>
+                        <text x="7" y="11" fill="rgba(255,255,255,0.6)" font-size="6.5" font-family="'JetBrains Mono', monospace">185m • 038°</text>
+                      </g>
+                      <!-- User Wristband blip (Center) -->
+                      <circle cx="100" cy="65" r="7" fill="rgba(0, 210, 255, 0.25)" class="radar-ping-anim"/>
+                      <circle cx="100" cy="65" r="3.5" fill="#00D2FF"/>
+                      <!-- Azimuth heading vector -->
+                      <line x1="100" y1="65" x2="114" y2="40" stroke="#00D2FF" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+
+                  <!-- COORDINATES DATA CARD -->
+                  <div class="coords-data-card">
+                    <div class="coord-row">
+                      <span class="coord-tag">LAT</span>
+                      <span class="coord-val">11.016844° N</span>
+                    </div>
+                    <div class="coord-row">
+                      <span class="coord-tag">LON</span>
+                      <span class="coord-val">76.955832° E</span>
+                    </div>
+                    <div class="coord-meta-row">
+                      <span class="meta-item">ALT: 412m MSL</span>
+                      <span class="meta-item">ACC: ±1.4 m</span>
+                      <span class="meta-item">u-blox M10S</span>
+                    </div>
+                  </div>
+
+                  <!-- CONNECTION & TELEMETRY FOOTER -->
+                  <div class="location-footer-strip">
+                    <div class="loc-link-status">
+                      <span class="status-indicator-dot safe-dot"></span>
+                      <span>MESH: CONNECTED</span>
+                    </div>
+                    <div class="loc-battery-status">
+                      <span>BAT: 88%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- NAVIGATION DOTS (SCREEN 3 ACTIVE) -->
+                <div class="wearable-nav-dots">
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot active"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                </div>
+              </div>
+            </div>
+            <div class="case-lug lug-bottom"></div>
+          </div>
+          <div class="screen-caption">03 LOCATION • u-blox MAX-M10S GNSS Radar</div>
+        </div>
+
+        <!-- ==============================================
+             SCREEN 04: SOS / EMERGENCY ACTIVATION
+             ============================================== -->
+        <div class="screen-presentation-col" data-screen-index="3">
+          <div class="col-meta">
+            <span class="col-number">04</span>
+            <span class="col-title">SOS</span>
+            <span class="col-subtitle">EMERGENCY ACTIVATION TRIGGER</span>
+          </div>
+
+          <div class="smartwatch-casing">
+            <div class="case-lug lug-top"></div>
+            <div class="case-body">
+              <div class="case-screw screw-tl"></div>
+              <div class="case-screw screw-tr"></div>
+              <div class="case-screw screw-bl"></div>
+              <div class="case-screw screw-br"></div>
+              <div class="case-crown"></div>
+              <div class="case-sos-guard"><div class="case-sos-button active-pressable"></div></div>
+
+              <div class="screen-viewport screen-sos" id="screenSos">
+                <!-- TOP STATUS BAR -->
+                <div class="wearable-status-bar alert-bar">
+                  <div class="status-left">
+                    <span class="screen-title-tag text-alert">EMERGENCY PROTOCOL</span>
+                  </div>
+                  <div class="status-center">
+                    <span class="status-clock live-clock">14:38:05</span>
+                  </div>
+                  <div class="status-right">
+                    <div class="battery-pill"><div class="battery-level" style="width: 88%;"></div><span class="battery-text">88%</span></div>
+                  </div>
+                </div>
+
+                <div class="screen-content sos-layout">
+                  <!-- INSTRUCTION CALLOUT -->
+                  <div class="sos-prompt-header">
+                    <span class="sos-alert-icon">⚠️</span>
+                    <span class="sos-prompt-text">PRESS & HOLD 3 SEC TO ACTIVATE</span>
+                  </div>
+
+                  <!-- LARGE INTERACTIVE SOS BUTTON WITH 3-SECOND RADIAL RING -->
+                  <div class="sos-trigger-container">
+                    <div class="sos-progress-ring-wrapper">
+                      <svg class="sos-ring-svg" viewBox="0 0 120 120">
+                        <!-- Background track -->
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(239, 68, 68, 0.25)" stroke-width="6"/>
+                        <!-- Dynamic countdown stroke -->
+                        <circle class="sos-countdown-ring" cx="60" cy="60" r="52" fill="none" stroke="#EF4444" stroke-width="6" stroke-dasharray="326.7" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                      </svg>
+                      <!-- Inner Red Action Button -->
+                      <button class="sos-action-btn" id="sosMainTrigger" aria-label="Activate Emergency SOS">
+                        <span class="sos-btn-text">SOS</span>
+                        <span class="sos-btn-sub">HOLD 3s</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- VISUAL SIGNAL ROUTING ARCHITECTURE -->
+                  <div class="emergency-flow-card">
+                    <div class="flow-header">EMERGENCY TELEMETRY PIPELINE</div>
+                    <div class="flow-steps">
+                      <div class="flow-node node-active">
+                        <span class="flow-icon">⌚</span>
+                        <span class="flow-label">Wristband</span>
+                      </div>
+                      <div class="flow-arrow">
+                        <span class="arrow-wave">⚡</span>
+                        <span class="arrow-text">LoRa RF</span>
+                      </div>
+                      <div class="flow-node node-pulse">
+                        <span class="flow-icon">📡</span>
+                        <span class="flow-label">Signal</span>
+                      </div>
+                      <div class="flow-arrow">
+                        <span class="arrow-wave">➔</span>
+                      </div>
+                      <div class="flow-node">
+                        <span class="flow-icon">🤖</span>
+                        <span class="flow-label">Rover / Station</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- SAFETY CANCEL OPTION -->
+                  <div class="sos-safety-cancel-container">
+                    <button class="sos-cancel-btn" id="cancelSosBtn">
+                      <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                      </svg>
+                      <span>CANCEL ACTIVATION</span>
+                    </button>
+                    <div class="safety-subtext">Prevents accidental deployment triggers</div>
+                  </div>
+                </div>
+
+                <!-- NAVIGATION DOTS (SCREEN 4 ACTIVE) -->
+                <div class="wearable-nav-dots">
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot active"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                </div>
+              </div>
+            </div>
+            <div class="case-lug lug-bottom"></div>
+          </div>
+          <div class="screen-caption">04 SOS • 3-Sec Fail-Safe Telemetry Trigger</div>
+        </div>
+
+        <!-- ==============================================
+             SCREEN 05: ROVER CONNECTION
+             ============================================== -->
+        <div class="screen-presentation-col" data-screen-index="4">
+          <div class="col-meta">
+            <span class="col-number">05</span>
+            <span class="col-title">ROVER LINK</span>
+            <span class="col-subtitle">LONG-RANGE TELEMETRY COMMS</span>
+          </div>
+
+          <div class="smartwatch-casing">
+            <div class="case-lug lug-top"></div>
+            <div class="case-body">
+              <div class="case-screw screw-tl"></div>
+              <div class="case-screw screw-tr"></div>
+              <div class="case-screw screw-bl"></div>
+              <div class="case-screw screw-br"></div>
+              <div class="case-crown"></div>
+              <div class="case-sos-guard"><div class="case-sos-button"></div></div>
+
+              <div class="screen-viewport screen-rover" id="screenRover">
+                <!-- TOP STATUS BAR -->
+                <div class="wearable-status-bar">
+                  <div class="status-left">
+                    <span class="screen-title-tag">ROVER LINK</span>
+                  </div>
+                  <div class="status-center">
+                    <span class="status-clock live-clock">14:38:05</span>
+                  </div>
+                  <div class="status-right">
+                    <div class="battery-pill"><div class="battery-level" style="width: 88%;"></div><span class="battery-text">88%</span></div>
+                  </div>
+                </div>
+
+                <div class="screen-content">
+                  <!-- CONNECTION STATUS PILL -->
+                  <div class="rover-status-banner">
+                    <div class="rover-link-state">
+                      <span class="status-indicator-dot safe-dot"></span>
+                      <span class="rover-state-text">CONNECTED</span>
+                    </div>
+                    <div class="signal-bars-widget" title="RSSI -64 dBm • Excellent">
+                      <span class="bar bar-1 active"></span>
+                      <span class="bar bar-2 active"></span>
+                      <span class="bar bar-3 active"></span>
+                      <span class="bar bar-4 active"></span>
+                    </div>
+                  </div>
+
+                  <!-- WRISTBAND-TO-ROVER WIRELESS ANIMATION -->
+                  <div class="telemetry-anim-card">
+                    <div class="comms-diagram">
+                      <div class="comms-endpoint endpoint-watch">
+                        <span class="endpoint-icon">⌚</span>
+                        <span class="endpoint-name">WRISTBAND</span>
+                      </div>
+
+                      <div class="comms-wave-field">
+                        <div class="wave-pulse pulse-1"></div>
+                        <div class="wave-pulse pulse-2"></div>
+                        <div class="wave-pulse pulse-3"></div>
+                        <span class="telemetry-badge">868 MHz LoRa</span>
+                      </div>
+
+                      <div class="comms-endpoint endpoint-rover">
+                        <span class="endpoint-icon">🤖</span>
+                        <span class="endpoint-name">RAKSHA-01</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ROVER TELEMETRY SPEC CARDS -->
+                  <div class="rover-specs-grid">
+                    <div class="rover-spec-box">
+                      <span class="spec-label">ROVER IDENTIFIER</span>
+                      <span class="spec-val-highlight">RAKSHA-01</span>
+                    </div>
+
+                    <div class="rover-spec-box">
+                      <span class="spec-label">COMMUNICATION</span>
+                      <span class="spec-val-text">LONG-RANGE TELEMETRY</span>
+                    </div>
+
+                    <div class="rover-spec-box">
+                      <span class="spec-label">ROVER BATTERY</span>
+                      <div class="rover-bat-row">
+                        <span class="rover-bat-num">82%</span>
+                        <div class="mini-bat-bar"><div class="mini-bat-fill" style="width: 82%;"></div></div>
+                      </div>
+                    </div>
+
+                    <div class="rover-spec-box">
+                      <span class="spec-label">LINK METRICS</span>
+                      <span class="spec-val-mono">-64 dBm • SNR +9.8</span>
+                    </div>
+                  </div>
+
+                  <!-- DISTANCE & TRACKING FOOTER -->
+                  <div class="rover-footer-card">
+                    <div class="vector-bearing">
+                      <span class="vector-arrow">↗</span>
+                      <span class="vector-info">BEARING 038° NNE • 185m AWAY</span>
+                    </div>
+                    <div class="rover-mode-tag">STANDBY TRACKING</div>
+                  </div>
+                </div>
+
+                <!-- NAVIGATION DOTS (SCREEN 5 ACTIVE) -->
+                <div class="wearable-nav-dots">
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot active"></span>
+                  <span class="nav-dot"></span>
+                </div>
+              </div>
+            </div>
+            <div class="case-lug lug-bottom"></div>
+          </div>
+          <div class="screen-caption">05 ROVER LINK • ESP32-C3 Long-Range RF Telemetry</div>
+        </div>
+
+        <!-- ==============================================
+             SCREEN 06: EMERGENCY MODE
+             ============================================== -->
+        <div class="screen-presentation-col" data-screen-index="5">
+          <div class="col-meta">
+            <span class="col-number">06</span>
+            <span class="col-title text-alert">EMERGENCY</span>
+            <span class="col-subtitle">CRITICAL INCIDENT ACTIVE</span>
+          </div>
+
+          <div class="smartwatch-casing casing-emergency">
+            <div class="case-lug lug-top"></div>
+            <div class="case-body alert-border-pulse">
+              <div class="case-screw screw-tl"></div>
+              <div class="case-screw screw-tr"></div>
+              <div class="case-screw screw-bl"></div>
+              <div class="case-screw screw-br"></div>
+              <div class="case-crown"></div>
+              <div class="case-sos-guard"><div class="case-sos-button active-alert"></div></div>
+
+              <div class="screen-viewport screen-emergency" id="screenEmergency">
+                <!-- TOP STATUS BAR (ALERT RED) -->
+                <div class="wearable-status-bar emergency-top-bar">
+                  <div class="status-left">
+                    <span class="alert-beacon-dot"></span>
+                    <span class="screen-title-tag alert-headline">CRITICAL INCIDENT</span>
+                  </div>
+                  <div class="status-center">
+                    <span class="status-clock live-clock">14:38:05</span>
+                  </div>
+                  <div class="status-right">
+                    <div class="battery-pill alert-battery"><div class="battery-level" style="width: 88%;"></div><span class="battery-text">88%</span></div>
+                  </div>
+                </div>
+
+                <div class="screen-content emergency-layout">
+                  <!-- PRIMARY EMERGENCY BANNER -->
+                  <div class="emergency-headline-card">
+                    <div class="emergency-siren-row">
+                      <span class="siren-icon">🚨</span>
+                      <h2 class="emergency-bold-title">EMERGENCY DETECTED</h2>
+                    </div>
+                    <div class="emergency-trigger-meta">TRIGGER: SOS BUTTON INTERRUPT (ESP32-C3)</div>
+                  </div>
+
+                  <!-- CRITICAL DISTRESSED VITALS READOUT -->
+                  <div class="emergency-vitals-card">
+                    <div class="em-vital-item em-vital-hr">
+                      <span class="em-vital-icon">❤️</span>
+                      <div class="em-vital-data">
+                        <span class="em-vital-val">138</span>
+                        <span class="em-vital-unit">BPM</span>
+                      </div>
+                      <span class="em-tag-alert">TACHYCARDIA</span>
+                    </div>
+
+                    <div class="em-vital-item em-vital-spo2">
+                      <span class="em-vital-icon">🫁</span>
+                      <div class="em-vital-data">
+                        <span class="em-vital-val">89%</span>
+                        <span class="em-vital-unit">SpO₂</span>
+                      </div>
+                      <span class="em-tag-alert">HYPOXIC</span>
+                    </div>
+
+                    <div class="em-vital-item em-vital-temp">
+                      <span class="em-vital-icon">🌡</span>
+                      <div class="em-vital-data">
+                        <span class="em-vital-val">37.9°</span>
+                        <span class="em-vital-unit">C</span>
+                      </div>
+                      <span class="em-tag-alert">ELEVATED</span>
+                    </div>
+                  </div>
+
+                  <!-- RESCUE ACTION STREAM -->
+                  <div class="emergency-actions-card">
+                    <div class="action-check-row">
+                      <svg class="check-icon-svg" viewBox="0 0 20 20" fill="#10B981">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="action-text">LOCATION SHARED: 11.016844, 76.955832</span>
+                    </div>
+
+                    <div class="action-check-row">
+                      <svg class="check-icon-svg" viewBox="0 0 20 20" fill="#10B981">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="action-text">RAKSHAROVER DEPLOYMENT REQUESTED</span>
+                    </div>
+
+                    <div class="transmission-broadcast-indicator">
+                      <div class="signal-ping-circle"></div>
+                      <span class="broadcast-text">EMERGENCY BEACON TRANSMITTING TO RAKSHA-01...</span>
+                    </div>
+                  </div>
+
+                  <!-- ACKNOWLEDGEMENT STATUS BOX -->
+                  <div class="ack-status-box">
+                    <div class="ack-top">
+                      <span class="ack-check">✔</span>
+                      <span class="ack-title">ACK RECEIVED FROM RAKSHA-01</span>
+                    </div>
+                    <div class="ack-eta">
+                      AUTONOMOUS ROVER DISPATCHED • ETA: <strong>03:45 MIN</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- NAVIGATION DOTS (SCREEN 6 ACTIVE) -->
+                <div class="wearable-nav-dots">
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot"></span>
+                  <span class="nav-dot active-alert-dot"></span>
+                </div>
+              </div>
+            </div>
+            <div class="case-lug lug-bottom"></div>
+          </div>
+          <div class="screen-caption alert-caption">06 EMERGENCY • Deployment Handshake & ACK</div>
+        </div>
+
+      </div><!-- /.screens-row -->
+    </div><!-- /#screensShowcase -->
+
+    <!-- ==============================================
+         INTERACTIVE SINGLE SMARTWATCH UNIT (SIMULATOR MODE)
+         ============================================== -->
+    <div id="interactiveSimulator" class="interactive-simulator active">
+      <div class="sim-wrapper">
+        
+        <!-- SIMULATOR CONTROLS LEFT -->
+        <div class="sim-panel sim-panel-left">
+          <div class="sim-panel-card">
+            <h4>SCREEN SELECTOR</h4>
+            <p>Select screen or swipe / use arrow keys / tap watch:</p>
+            <div class="sim-screen-btn-list">
+              <button class="sim-screen-btn active" data-target-screen="0">
+                <span class="badge-num">01</span>
+                <span>HOME / VITAL STATUS</span>
+              </button>
+              <button class="sim-screen-btn" data-target-screen="1">
+                <span class="badge-num">02</span>
+                <span>HEALTH MONITORING</span>
+              </button>
+              <button class="sim-screen-btn" data-target-screen="2">
+                <span class="badge-num">03</span>
+                <span>LOCATION (GNSS)</span>
+              </button>
+              <button class="sim-screen-btn" data-target-screen="3">
+                <span class="badge-num">04</span>
+                <span>SOS ACTIVATION</span>
+              </button>
+              <button class="sim-screen-btn" data-target-screen="4">
+                <span class="badge-num">05</span>
+                <span>ROVER CONNECTION</span>
+              </button>
+              <button class="sim-screen-btn alert-screen-btn" data-target-screen="5">
+                <span class="badge-num">06</span>
+                <span>EMERGENCY MODE</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="sim-panel-card">
+            <h4>HARDWARE SENSOR INJECTION</h4>
+            <p>Live stream telemetry from MAX30102 & MLX90614:</p>
+            
+            <div class="sim-controls-grid">
+              <div class="ctrl-group">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <label>Heart Rate (BPM)</label>
+                  <span id="hrZoneBadge" style="font-family:var(--font-mono); font-size:0.58rem; color:var(--color-safe-green); font-weight:700;">NORMAL (60-100)</span>
+                </div>
+                <div class="range-with-val">
+                  <input type="range" id="simHrSlider" min="45" max="175" value="82">
+                  <span id="simHrVal">82 BPM</span>
+                </div>
+              </div>
+
+              <div class="ctrl-group">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <label>SpO₂ Saturation (%)</label>
+                  <span id="spo2ZoneBadge" style="font-family:var(--font-mono); font-size:0.58rem; color:var(--color-safe-green); font-weight:700;">OPTIMAL (95-100%)</span>
+                </div>
+                <div class="range-with-val">
+                  <input type="range" id="simSpo2Slider" min="70" max="100" value="97">
+                  <span id="simSpo2Val">97%</span>
+                </div>
+              </div>
+
+              <div class="ctrl-group">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <label>Body Temperature (°C)</label>
+                  <span id="tempZoneBadge" style="font-family:var(--font-mono); font-size:0.58rem; color:var(--color-safe-green); font-weight:700;">NORMOTHERMIC</span>
+                </div>
+                <div class="range-with-val">
+                  <input type="range" id="simTempVal" min="330" max="420" value="367">
+                  <span id="simTempDisplay">36.7°C</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- THRESHOLD PRESET BUTTONS -->
+            <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.75rem;">
+              <span style="font-family:var(--font-mono); font-size:0.65rem; color:var(--color-electric-blue); font-weight:700;">THRESHOLD PRESETS:</span>
+              <div class="preset-btn-grid">
+                <button class="preset-chip-btn preset-safe" id="presetSafeBtn" title="Set all values to normal safe ranges">
+                  <div class="preset-label-group">
+                    <span class="preset-dot dot-safe"></span>
+                    <span>Normal Ops (Safe)</span>
+                  </div>
+                  <span class="preset-values">82 BPM • 97% • 36.7°C</span>
+                </button>
+
+                <button class="preset-chip-btn preset-warning" id="presetWarningBtn" title="Trigger Warning Threshold: Elevated HR & Mild Hypoxia">
+                  <div class="preset-label-group">
+                    <span class="preset-dot dot-warning"></span>
+                    <span>Exertion Warning</span>
+                  </div>
+                  <span class="preset-values">118 BPM • 92% • 37.6°C</span>
+                </button>
+
+                <button class="preset-chip-btn preset-critical" id="presetHypoxiaBtn" title="Trigger Critical Threshold: Severe Hypoxia & Tachycardia">
+                  <div class="preset-label-group">
+                    <span class="preset-dot dot-critical"></span>
+                    <span>Severe Hypoxia Alert</span>
+                  </div>
+                  <span class="preset-values">145 BPM • 86% • 38.2°C</span>
+                </button>
+
+                <button class="preset-chip-btn preset-critical" id="presetHeatstrokeBtn" title="Trigger Critical Threshold: Extreme Heatstroke">
+                  <div class="preset-label-group">
+                    <span class="preset-dot dot-critical"></span>
+                    <span>Heatstroke Collapse</span>
+                  </div>
+                  <span class="preset-values">170 BPM • 96% • 41.0°C</span>
+                </button>
+              </div>
+
+              <!-- LSM6DSOX FALL TRIGGER -->
+              <button class="fall-trigger-btn" id="triggerFallBtn" title="Simulate free-fall and 4.8G high-impact event">
+                <span>💥</span>
+                <span>Simulate 4.8G Fall Impact (LSM6DSOX)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTER INTERACTIVE WEARABLE VIEW -->
+        <div class="sim-watch-stage">
+          <div class="sim-navigation-arrows">
+            <button id="prevScreenBtn" class="arrow-btn" aria-label="Previous screen">❮</button>
+            <span class="active-screen-indicator-text" id="activeScreenName">01 HOME • VITAL STATUS</span>
+            <button id="nextScreenBtn" class="arrow-btn" aria-label="Next screen">❯</button>
+          </div>
+
+          <!-- THE DYNAMIC INTERACTIVE WATCH CONTAINER -->
+          <div class="smartwatch-casing casing-interactive" id="interactiveWatchCasing">
+            <div class="case-lug lug-top"></div>
+            <div class="case-body">
+              <div class="case-screw screw-tl"></div>
+              <div class="case-screw screw-tr"></div>
+              <div class="case-screw screw-bl"></div>
+              <div class="case-screw screw-br"></div>
+              <div class="case-crown" id="simCrownDial" title="Click crown to cycle screens"></div>
+              <div class="case-sos-guard">
+                <div class="case-sos-button" id="hardwareSosBtn" title="Tactile SOS Hardware Button"></div>
+              </div>
+
+              <!-- IN-WATCH THRESHOLD BREACH ALERT OVERLAY (APPEARS ON THRESHOLD CROSSING) -->
+              <div id="watchAlertOverlay" class="watch-threshold-alert-overlay" style="display:none;">
+                <div class="alert-overlay-header">
+                  <span class="alert-overlay-icon">🚨</span>
+                  <span class="alert-overlay-title" id="overlayTitle">CRITICAL THRESHOLD BREACH</span>
+                </div>
+                <div class="alert-overlay-body" id="overlayBody">
+                  Tachycardia (170 BPM) + Severe Heatstroke (41.0°C) detected.
+                </div>
+                <div class="alert-overlay-countdown">
+                  <span>DISPATCHING RAKSHA-01 IN:</span>
+                  <span id="overlayCountdownVal" style="color:#EF4444; font-size:0.75rem;">05s</span>
+                </div>
+                <div class="alert-overlay-actions">
+                  <button class="overlay-btn overlay-btn-dismiss" id="overlayDismissBtn">CANCEL</button>
+                  <button class="overlay-btn overlay-btn-escalate" id="overlayEscalateBtn">DISPATCH NOW</button>
+                </div>
+              </div>
+
+              <!-- VIEWPORT FOR INTERACTIVE DISPLAY -->
+              <div class="screen-viewport interactive-viewport" id="interactiveViewport">
+                <!-- Injected via JavaScript from active screen template -->
+              </div>
+            </div>
+            <div class="case-lug lug-bottom"></div>
+          </div>
+
+          <div class="watch-tactile-help">
+            <span>💡 <strong>Interactive Watch:</strong> Drag sliders to cross thresholds • Tap cards on the watch face to jump screens • Press & hold SOS on Screen 04!</span>
+          </div>
+        </div>
+
+        <!-- SIMULATOR CONTROLS RIGHT -->
+        <div class="sim-panel sim-panel-right">
+          <div class="sim-panel-card">
+            <h4>TELEMETRY PROTOCOL STATE</h4>
+            <div class="protocol-status-list">
+              <div class="proto-item">
+                <span class="proto-key">Wearable Node ID</span>
+                <span class="proto-val">WRIST-ALPHA-09</span>
+              </div>
+              <div class="proto-item">
+                <span class="proto-key">System Threat Level</span>
+                <span class="proto-val text-safe" id="protoSystemStatus">● SAFE (STABLE)</span>
+              </div>
+              <div class="proto-item">
+                <span class="proto-key">Physiological Risk</span>
+                <span class="proto-val" id="protoRiskLevel" style="color:var(--color-safe-green); font-weight:700;">LOW (4%)</span>
+              </div>
+              <div class="proto-item">
+                <span class="proto-key">Rover Companion</span>
+                <span class="proto-val text-safe" id="protoRoverState">RAKSHA-01 (ONLINE)</span>
+              </div>
+              <div class="proto-item">
+                <span class="proto-key">LoRa Frequency</span>
+                <span class="proto-val">868.10 MHz (CH 04)</span>
+              </div>
+              <div class="proto-item">
+                <span class="proto-key">Link Reliability</span>
+                <span class="proto-val text-safe" id="protoLinkReliability">99.8% (-64 dBm)</span>
+              </div>
+              <div class="proto-item">
+                <span class="proto-key">GNSS Fix Type</span>
+                <span class="proto-val text-safe">3D Multi-Constellation</span>
+              </div>
+              <div class="proto-item">
+                <span class="proto-key">Fall Detection MLC</span>
+                <span class="proto-val text-safe" id="protoFallState">ARMED • NORMAL</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TACTICAL AUDIO FX SUITE -->
+          <div class="sim-panel-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+              <h4 style="margin:0;">TACTICAL AUDIO FX</h4>
+              <span class="badge-tech" style="font-size:0.55rem;">WEB AUDIO</span>
+            </div>
+            <p>Auditory telemetry cues synthesized for rescue operations:</p>
+            <div class="sound-fx-grid">
+              <button class="sound-chip-btn" id="sfxBeepBtn" title="Play UI Tactical Micro-Beep">
+                <span>🔘</span> <span>UI Click / Crown Dial</span>
+              </button>
+              <button class="sound-chip-btn" id="sfxPulseBtn" title="Play Medical PPG Pulse Oximeter Tone">
+                <span>❤️</span> <span>Pulse Oximeter Beep</span>
+              </button>
+              <button class="sound-chip-btn" id="sfxWarningBtn" title="Play Threshold Advisory Warning">
+                <span>⚠️</span> <span>Warning Advisory Ping</span>
+              </button>
+              <button class="sound-chip-btn" id="sfxAlarmBtn" title="Play Military Emergency Alarm">
+                <span>🚨</span> <span>Critical Rover Alarm</span>
+              </button>
+              <button class="sound-chip-btn" id="sfxTelemetryBtn" title="Play LoRa RF Transmission Chirp">
+                <span>📡</span> <span>LoRa Telemetry Burst</span>
+              </button>
+              <button class="sound-chip-btn" id="sfxFallBtn" title="Play 4.8G Impact & Distress Chime">
+                <span>💥</span> <span>4.8G Fall Impact Crash</span>
+              </button>
+              <button class="sound-chip-btn" id="sfxSosChargeBtn" title="Play 3-Second SOS Charge Ramping Tone">
+                <span>🆘</span> <span>SOS 3s Power-Up</span>
+              </button>
+            </div>
+            <div style="margin-top:0.65rem; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between;">
+              <label style="font-family:var(--font-mono); font-size:0.65rem; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; gap:5px;">
+                <input type="checkbox" id="liveHeartbeatAudioToggle" style="accent-color:var(--color-electric-blue); cursor:pointer;">
+                <span>Continuous Cardiac Audio</span>
+              </label>
+              <span id="heartbeatBpmIndicator" style="font-family:var(--font-mono); font-size:0.62rem; color:var(--color-electric-blue); font-weight:700;">82 BPM</span>
+            </div>
+          </div>
+
+          <!-- BACKEND TELEMETRY & API GATEWAY SYNC -->
+          <div class="sim-panel-card" id="backendSyncPanel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+              <h4 style="margin:0;">BACKEND UPLINK</h4>
+              <span id="backendStatusTag" class="badge-tech" style="font-size:0.55rem; background:rgba(245,158,11,0.2); color:#F59E0B; border-color:#F59E0B;">STANDALONE</span>
+            </div>
+            <p style="font-size:0.65rem; margin-bottom:0.45rem;">Real-time REST & WebSocket telemetry sync with RAKSHAROVER Central Station:</p>
+            <div style="font-family:var(--font-mono); font-size:0.63rem; display:flex; flex-direction:column; gap:4px; margin-bottom:0.5rem; background:rgba(0,0,0,0.35); padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--text-secondary);">REST API:</span>
+                <span id="apiEndpointDisplay" style="color:var(--color-electric-blue); font-weight:600; text-overflow:ellipsis; overflow:hidden; max-width:140px; white-space:nowrap;">http://localhost:5000</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--text-secondary);">WebSocket:</span>
+                <span id="wsStatusDisplay" style="color:var(--text-secondary); font-weight:600;">DISCONNECTED</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--text-secondary);">Ping Latency:</span>
+                <span id="pingLatencyDisplay" style="color:var(--text-secondary); font-weight:600;">-- ms</span>
+              </div>
+            </div>
+            <div class="sim-btn-col">
+              <button id="syncPushVitalsBtn" class="sound-chip-btn" style="width:100%; border-color:var(--color-electric-blue); color:var(--color-electric-blue);">
+                <span>📡</span> <span>Broadcast Vitals to Backend</span>
+              </button>
+              <button id="syncTriggerSosBtn" class="sound-chip-btn" style="width:100%; border-color:var(--color-emergency-red); color:var(--color-emergency-red);">
+                <span>🚨</span> <span>Trigger Backend SOS Uplink</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="sim-panel-card">
+            <h4>QUICK ACTIONS</h4>
+            <div class="sim-btn-col">
+              <button id="quickSosTriggerBtn" class="sim-action-btn red-btn">
+                <span>Trigger Instant 3s SOS</span>
+              </button>
+              <button id="quickResetBtn" class="sim-action-btn neutral-btn">
+                <span>Reset System to Safe State</span>
+              </button>
+              <button id="quickReturnAllBtn" class="sim-action-btn outline-btn">
+                <span>View 6-Screen Reference Grid</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.sim-wrapper -->
+    </div><!-- /#interactiveSimulator -->
+
+  </main>
+
+  <!-- PRESENTATION FOOTER & SYSTEM ARCHITECTURE SUMMARY -->
+  <footer class="pres-footer">
+    <div class="footer-inner">
+      <div class="footer-col-brand">
+        <div class="footer-title">RAKSHAROVER TACTICAL WEARABLE SYSTEM</div>
+        <p class="footer-desc">
+          Engineered for extreme disaster scenarios, structural collapses, wilderness search & rescue, and defence first responders. 
+          Featuring zero-latency telemetry between human operators and autonomous rescue rovers.
+        </p>
+      </div>
+
+      <div class="footer-col-specs">
+        <div class="footer-heading">SYSTEM ARCHITECTURE SPECIFICATION</div>
+        <ul class="spec-bullet-list">
+          <li><strong>Wearable Compute:</strong> ESP32-C3 RISC-V 32-bit SoC (160MHz) + LoRa SX1262 Transceiver</li>
+          <li><strong>Optical Vitals Engine:</strong> Maxim Integrated MAX30102 (BPM + SpO₂ PPG Pulse Oximetry)</li>
+          <li><strong>Non-Contact Thermometry:</strong> Melexis MLX90614 Medical IR Pyrometer (±0.2°C accuracy)</li>
+          <li><strong>Inertial Kinematics:</strong> STMicroelectronics LSM6DSOX 6-DoF IMU with embedded Machine Learning Core</li>
+          <li><strong>Satellite Navigation:</strong> u-blox MAX-M10S Multi-GNSS (Super-S Sub-meter localization)</li>
+          <li><strong>Fail-Safe Trigger:</strong> Debounced IP68 Tactile Pushbutton with 3-Second Hold Confirmation</li>
+        </ul>
+      </div>
+
+      <div class="footer-col-tokens">
+        <div class="footer-heading">DESIGN TOKENS & DISPLAY SPECS</div>
+        <div class="token-list">
+          <div class="token-row"><span>Display:</span> 1.78" AMOLED (368 × 448 px, 326 PPI, 1000 nits)</div>
+          <div class="token-row"><span>Primary Base:</span> Deep Navy / Pure OLED Black (#070B14 / #000000)</div>
+          <div class="token-row"><span>Primary Accent:</span> Electric Blue (#00D2FF)</div>
+          <div class="token-row"><span>Safe State:</span> Emergency Green (#10B981)</div>
+          <div class="token-row"><span>Warning State:</span> Tactical Amber (#F59E0B)</div>
+          <div class="token-row"><span>Critical State:</span> High-Alert Red (#EF4444)</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      RAKSHAROVER AUTONOMOUS RESCUE SYSTEM • HIGH-FIDELITY SMARTWATCH UI/UX PRESENTATION SPECIFICATION
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
