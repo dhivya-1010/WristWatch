@@ -72,6 +72,11 @@
           <span class="pulse-indicator"></span>
           <span>Simulate SOS</span>
         </button>
+
+        <div id="serverStatusBadge" class="server-status-pill offline" title="Tactical Telemetry Server Uplink Status (Click to Reconnect)">
+          <span class="pulse-indicator"></span>
+          <span id="serverStatusText">API: STANDALONE</span>
+        </div>
       </div>
     </div>
 
@@ -1228,6 +1233,37 @@
             </div>
           </div>
 
+          <!-- BACKEND TELEMETRY & API GATEWAY SYNC -->
+          <div class="sim-panel-card" id="backendSyncPanel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+              <h4 style="margin:0;">BACKEND UPLINK</h4>
+              <span id="backendStatusTag" class="badge-tech" style="font-size:0.55rem; background:rgba(245,158,11,0.2); color:#F59E0B; border-color:#F59E0B;">STANDALONE</span>
+            </div>
+            <p style="font-size:0.65rem; margin-bottom:0.45rem;">Real-time REST & WebSocket telemetry sync with RAKSHAROVER Central Station:</p>
+            <div style="font-family:var(--font-mono); font-size:0.63rem; display:flex; flex-direction:column; gap:4px; margin-bottom:0.5rem; background:rgba(0,0,0,0.35); padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--text-secondary);">REST API:</span>
+                <span id="apiEndpointDisplay" style="color:var(--color-electric-blue); font-weight:600; text-overflow:ellipsis; overflow:hidden; max-width:140px; white-space:nowrap;">http://localhost:5000</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--text-secondary);">WebSocket:</span>
+                <span id="wsStatusDisplay" style="color:var(--text-secondary); font-weight:600;">DISCONNECTED</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--text-secondary);">Ping Latency:</span>
+                <span id="pingLatencyDisplay" style="color:var(--text-secondary); font-weight:600;">-- ms</span>
+              </div>
+            </div>
+            <div class="sim-btn-col">
+              <button id="syncPushVitalsBtn" class="sound-chip-btn" style="width:100%; border-color:var(--color-electric-blue); color:var(--color-electric-blue);">
+                <span>📡</span> <span>Broadcast Vitals to Backend</span>
+              </button>
+              <button id="syncTriggerSosBtn" class="sound-chip-btn" style="width:100%; border-color:var(--color-emergency-red); color:var(--color-emergency-red);">
+                <span>🚨</span> <span>Trigger Backend SOS Uplink</span>
+              </button>
+            </div>
+          </div>
+
           <div class="sim-panel-card">
             <h4>QUICK ACTIONS</h4>
             <div class="sim-btn-col">
@@ -1289,6 +1325,7 @@
     </div>
   </footer>
 
+  <script src="config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

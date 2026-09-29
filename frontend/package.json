@@ -1,0 +1,17 @@
+{
+  "name": "raksharover-frontend",
+  "version": "1.0.0",
+  "description": "Tactical Wearable UI/UX Prototype for RAKSHAROVER SAR System",
+  "scripts": {
+    "dev": "npx -y serve . -l 3000",
+    "start": "npx -y serve . -l 3000"
+  },
+  "keywords": [
+    "wearable-ui",
+    "smartwatch",
+    "search-and-rescue",
+    "tactical-ui"
+  ],
+  "author": "RAKSHAROVER Engineering",
+  "license": "MIT"
+}

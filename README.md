@@ -203,17 +203,54 @@ The interactive smartwatch continuously evaluates streaming physiological data a
 
 ---
 
-## 6. How to Run & Experience the Prototype
+## 6. Separated Architecture & Deployment
 
-The prototype is built using zero external build dependencies (Pure Vanilla HTML5, CSS3, and JavaScript).
+The codebase is structured into fully decoupled **Frontend** and **Backend** tiers with Docker, cloud PaaS, and static host support:
 
-### Running Locally:
-```bash
-cd c:\Users\kanak\Downloads\WristWatch
-python -m http.server 8765 --bind 127.0.0.1
 ```
-Open in any modern browser:
-👉 **`http://127.0.0.1:8765/index.html`**
+WristWatch/
+├── backend/            # Express REST API + Real-Time WebSocket Telemetry Gateway
+│   ├── src/            # Server, routes, telemetryStore & websocket handlers
+│   ├── Dockerfile      # Production Node 22 Alpine container
+│   └── package.json    # Backend dependencies (express, ws, cors, dotenv)
+├── frontend/           # Tactical Wearable Smartwatch UI Prototype
+│   ├── index.html      # 6 AMOLED screens + Telemetry Uplink HUD + Audio FX
+│   ├── app.js          # Interactive state machine & TacticalBackendSync client
+│   ├── config.js       # Auto-detects local backend vs remote URL
+│   ├── Dockerfile      # Nginx Alpine container with Gzip & caching
+│   ├── nginx.conf      # SPA reverse proxy configuration
+│   └── vercel.json     # 1-click Vercel deployment
+├── docker-compose.yml  # Multi-container orchestration (Frontend: 3000, Backend: 5000)
+├── Dockerfile          # Single-container unified deployment for Render/Railway
+├── render.yaml         # Render Infrastructure-as-Code Blueprint
+├── DEPLOYMENT.md       # Comprehensive cloud & container deployment manual
+└── package.json        # Root script runner (npm start, npm run dev, npm test)
+```
+
+### Quick Start:
+
+#### 1. Run Backend (Port 5000):
+```bash
+cd backend
+npm install
+npm start
+```
+
+#### 2. Run Frontend (Port 3000):
+```bash
+cd frontend
+npx -y serve . -l 3000
+```
+Open **`http://localhost:3000`** in any browser. The watch automatically links to the backend via WebSocket and displays `● API: ONLINE (PORT 5000)`!
+
+#### 3. Run with Docker Compose:
+```bash
+docker compose up --build
+```
+
+For full deployment instructions (Vercel, Netlify, Render, Railway, Fly.io, single-container deployment), see **[DEPLOYMENT.md](file:///c:/Users/kanak/Downloads/WristWatch/DEPLOYMENT.md)**.
+
+---
 
 ### Interactive Presentation Features:
 1. **6-Screen Grid View (Default):**
@@ -227,6 +264,7 @@ Open in any modern browser:
    - **Hold-to-Activate SOS:** Click and hold the red SOS button on Screen 04 for 3 full seconds. The radial SVG progress ring smoothly fills, vibrates visually, and transitions to Screen 06 EMERGENCY!
    - **Crown Dial:** Click or rotate the physical digital crown to advance between screens.
    - **Sensor Injection Sliders:** Adjust Heart Rate (50-170 BPM), SpO₂ (75-100%), and Temperature (34.0-41.0°C) to see real-time updates across screens.
+   - **Live Backend Uplink:** Real-time bi-directional telemetry broadcast over WebSockets and REST.
 5. **Keyboard Shortcuts:**
    - `1` through `6`: Instantly switch to any screen
    - `←` / `→`: Navigate previous/next screen
@@ -234,3 +272,4 @@ Open in any modern browser:
 
 ---
 *RAKSHAROVER Autonomous Rescue System • Engineering & Wearable UI/UX Specification*
+

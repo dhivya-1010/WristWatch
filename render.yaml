@@ -1,0 +1,26 @@
+services:
+  # RAKSHAROVER Backend Web Service
+  - type: web
+    name: raksharover-backend
+    runtime: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: SERVE_FRONTEND
+        value: "false"
+
+  # RAKSHAROVER Frontend Static Site
+  - type: static
+    name: raksharover-frontend
+    plan: free
+    rootDir: frontend
+    staticPublishPath: .
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

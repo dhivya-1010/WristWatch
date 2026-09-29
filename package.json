@@ -1,0 +1,26 @@
+{
+  "name": "raksharover-workspace",
+  "version": "1.0.0",
+  "description": "RAKSHAROVER Tactical Wearable Smartwatch & Autonomous Rover Telemetry Ecosystem",
+  "scripts": {
+    "start": "cd backend && node src/server.js",
+    "dev:backend": "cd backend && node --watch src/server.js",
+    "dev:frontend": "npx -y serve frontend -l 3000",
+    "dev": "npx -y concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "unified": "cd backend && cross-env SERVE_FRONTEND=true node src/server.js",
+    "test": "node backend/test.js",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up",
+    "docker:down": "docker compose down"
+  },
+  "keywords": [
+    "raksharover",
+    "tactical-smartwatch",
+    "search-and-rescue",
+    "telemetry",
+    "websocket",
+    "docker"
+  ],
+  "author": "RAKSHAROVER Engineering",
+  "license": "MIT"
+}

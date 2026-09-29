@@ -1425,4 +1425,211 @@ document.addEventListener('DOMContentLoaded', () => {
       renderInteractiveScreen(screenParam);
     }
   }
+
+  /* --------------------------------------------------------------------------
+     17. TACTICAL BACKEND REST & WEBSOCKET TELEMETRY GATEWAY
+     -------------------------------------------------------------------------- */
+  const serverStatusBadge = document.getElementById('serverStatusBadge');
+  const serverStatusText = document.getElementById('serverStatusText');
+  const backendStatusTag = document.getElementById('backendStatusTag');
+  const apiEndpointDisplay = document.getElementById('apiEndpointDisplay');
+  const wsStatusDisplay = document.getElementById('wsStatusDisplay');
+  const pingLatencyDisplay = document.getElementById('pingLatencyDisplay');
+  const syncPushVitalsBtn = document.getElementById('syncPushVitalsBtn');
+  const syncTriggerSosBtn = document.getElementById('syncTriggerSosBtn');
+
+  const config = window.__CONFIG__ || {
+    API_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : window.location.origin,
+    WS_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'ws://localhost:5000/ws' : ((window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host + '/ws')
+  };
+
+  if (apiEndpointDisplay) {
+    apiEndpointDisplay.textContent = config.API_URL;
+    apiEndpointDisplay.title = config.API_URL;
+  }
+
+  let wsSocket = null;
+  let wsReconnectTimer = null;
+  let isBackendOnline = false;
+  let lastPingStart = 0;
+
+  function updateServerStatusUI(online, label, extraClass = '') {
+    isBackendOnline = online;
+    if (serverStatusBadge) {
+      serverStatusBadge.className = `server-status-pill ${online ? 'online' : 'offline'} ${extraClass}`.trim();
+    }
+    if (serverStatusText) {
+      serverStatusText.textContent = label;
+    }
+    if (backendStatusTag) {
+      backendStatusTag.textContent = online ? 'ONLINE' : 'STANDALONE';
+      backendStatusTag.style.background = online ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)';
+      backendStatusTag.style.color = online ? '#10B981' : '#F59E0B';
+      backendStatusTag.style.borderColor = online ? '#10B981' : '#F59E0B';
+    }
+    if (wsStatusDisplay) {
+      wsStatusDisplay.textContent = online ? 'CONNECTED' : 'DISCONNECTED';
+      wsStatusDisplay.style.color = online ? '#10B981' : 'var(--text-secondary)';
+    }
+  }
+
+  function connectWebSocket() {
+    if (!config.WS_URL) return;
+
+    try {
+      if (wsSocket) {
+        wsSocket.close();
+      }
+
+      wsSocket = new WebSocket(config.WS_URL);
+
+      wsSocket.onopen = () => {
+        console.log('[TELEMETRY] WebSocket connected to:', config.WS_URL);
+        updateServerStatusUI(true, 'API: ONLINE (PORT 5000)');
+        measurePingLatency();
+      };
+
+      wsSocket.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          handleIncomingBackendMessage(msg);
+        } catch (e) {
+          console.warn('[TELEMETRY] Message parsing error:', e);
+        }
+      };
+
+      wsSocket.onclose = () => {
+        updateServerStatusUI(false, 'API: STANDALONE');
+        scheduleWsReconnect();
+      };
+
+      wsSocket.onerror = () => {
+        // Handled via onclose
+      };
+    } catch (e) {
+      updateServerStatusUI(false, 'API: STANDALONE');
+      scheduleWsReconnect();
+    }
+  }
+
+  function scheduleWsReconnect() {
+    if (wsReconnectTimer) clearTimeout(wsReconnectTimer);
+    wsReconnectTimer = setTimeout(() => {
+      connectWebSocket();
+    }, 4000);
+  }
+
+  function measurePingLatency() {
+    if (wsSocket && wsSocket.readyState === WebSocket.OPEN) {
+      lastPingStart = performance.now();
+      wsSocket.send(JSON.stringify({ type: 'PING' }));
+    }
+  }
+
+  setInterval(measurePingLatency, 8000);
+
+  function handleIncomingBackendMessage(msg) {
+    if (msg.type === 'PONG') {
+      const latency = Math.round(performance.now() - lastPingStart);
+      if (pingLatencyDisplay) {
+        pingLatencyDisplay.textContent = `${latency} ms`;
+        pingLatencyDisplay.style.color = latency < 120 ? '#10B981' : latency < 350 ? '#F59E0B' : '#EF4444';
+      }
+    } else if (msg.type === 'INITIAL_STATE') {
+      console.log('[TELEMETRY] Initial state synchronized from server');
+    } else if (msg.type === 'EMERGENCY_TRIGGERED') {
+      renderInteractiveScreen(5);
+      playCriticalAlarm();
+      if (serverStatusBadge) {
+        serverStatusBadge.classList.add('emergency');
+      }
+    } else if (msg.type === 'EMERGENCY_CANCELLED') {
+      if (serverStatusBadge) {
+        serverStatusBadge.classList.remove('emergency');
+      }
+    }
+  }
+
+  function sendTelemetryToBackend() {
+    const payload = {
+      heartRate: currentHr,
+      spo2: currentSpo2,
+      temperature: currentTemp,
+      fallDetected: isFallDetected,
+      motion: currentMotion,
+      batteryLevel: 88
+    };
+
+    if (wsSocket && wsSocket.readyState === WebSocket.OPEN) {
+      wsSocket.send(JSON.stringify({ type: 'TELEMETRY_UPDATE', payload }));
+    }
+
+    if (config.API_URL) {
+      fetch(`${config.API_URL}/api/telemetry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => { /* Graceful offline fallback */ });
+    }
+  }
+
+  function sendSosToBackend(triggerType = 'MANUAL_SOS') {
+    if (wsSocket && wsSocket.readyState === WebSocket.OPEN) {
+      wsSocket.send(JSON.stringify({ type: 'SOS_TRIGGER', payload: { triggerType } }));
+    }
+
+    if (config.API_URL) {
+      fetch(`${config.API_URL}/api/emergency/sos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ triggerType })
+      }).catch(() => { /* Graceful offline fallback */ });
+    }
+  }
+
+  if (syncPushVitalsBtn) {
+    syncPushVitalsBtn.addEventListener('click', () => {
+      sendTelemetryToBackend();
+      playTacticalTick();
+      const origText = syncPushVitalsBtn.innerHTML;
+      syncPushVitalsBtn.innerHTML = '<span>✓</span> <span>Dispatched to Central Station!</span>';
+      setTimeout(() => { syncPushVitalsBtn.innerHTML = origText; }, 1400);
+    });
+  }
+
+  if (syncTriggerSosBtn) {
+    syncTriggerSosBtn.addEventListener('click', () => {
+      triggerEmergencyState();
+      sendSosToBackend('PANIC_SIMULATOR_BUTTON');
+    });
+  }
+
+  if (serverStatusBadge) {
+    serverStatusBadge.addEventListener('click', () => {
+      connectWebSocket();
+      playTacticalTick();
+    });
+  }
+
+  // Hook into emergency state
+  const prevTriggerEmergencyState = triggerEmergencyState;
+  triggerEmergencyState = function() {
+    prevTriggerEmergencyState();
+    sendSosToBackend('WATCH_UI_EMERGENCY');
+  };
+
+  // Hook into telemetry updates
+  let telemetryDebounceTimer = null;
+  const prevUpdateAllSensors = updateAllSensors;
+  updateAllSensors = function() {
+    prevUpdateAllSensors();
+    if (telemetryDebounceTimer) clearTimeout(telemetryDebounceTimer);
+    telemetryDebounceTimer = setTimeout(() => {
+      sendTelemetryToBackend();
+    }, 400);
+  };
+
+  // Connect to backend WebSocket
+  connectWebSocket();
 });
+
