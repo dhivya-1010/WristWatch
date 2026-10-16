@@ -1384,7 +1384,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (e.key === 'ArrowLeft') {
       if (interactiveSimulator.classList.contains('active')) prevScreen();
     } else if (e.key === 'Escape') {
-      if (watchAlertOverlay.style.display !== 'none') {
+      if (watchDetailModal && watchDetailModal.classList.contains('active')) {
+        closeWatchDetailModal();
+      } else if (watchAlertOverlay && watchAlertOverlay.style.display !== 'none') {
         watchAlertOverlay.style.display = 'none';
       } else {
         setViewMode('interactive');
@@ -1618,11 +1620,593 @@ document.addEventListener('DOMContentLoaded', () => {
     sendSosToBackend('WATCH_UI_EMERGENCY');
   };
 
-  // Hook into telemetry updates
+  /* --------------------------------------------------------------------------
+     18. EXPANDED TACTICAL WATCH DETAIL MODAL ENGINE
+     -------------------------------------------------------------------------- */
+  const watchDetailModal = document.getElementById('watchDetailModal');
+  const closeWatchModalBtn = document.getElementById('closeWatchModalBtn');
+  const modalScreenBadge = document.getElementById('modalScreenBadge');
+  const modalScreenTitle = document.getElementById('modalScreenTitle');
+  const modalScreenSubtitle = document.getElementById('modalScreenSubtitle');
+  const modalWatchMount = document.getElementById('modalWatchMount');
+  const modalInspectorContent = document.getElementById('modalInspectorContent');
+
+  let activeModalScreenIndex = null;
+
+  const MODAL_SCREEN_METAS = [
+    {
+      badge: 'SCREEN 01',
+      title: 'Home • Vital Status Overview',
+      subtitle: 'Primary operational face providing instant situational assessment in under 1 second'
+    },
+    {
+      badge: 'SCREEN 02',
+      title: 'Health • Monitoring Telemetry',
+      subtitle: 'Continuous physiological telemetry streaming from onboard optical & thermal bio-sensors'
+    },
+    {
+      badge: 'SCREEN 03',
+      title: 'Location • Tactical GNSS Radar',
+      subtitle: 'Precision geographic coordinates, satellite geometry & companion rover spatial vector'
+    },
+    {
+      badge: 'SCREEN 04',
+      title: 'SOS • Emergency Trigger Protocol',
+      subtitle: 'High-clarity fail-safe manual panic trigger with 3-second radial hold confirmation'
+    },
+    {
+      badge: 'SCREEN 05',
+      title: 'Rover Link • Long-Range Telemetry',
+      subtitle: 'Bidirectional wireless link budget between operator wearable and RAKSHA-01 ground rover'
+    },
+    {
+      badge: 'SCREEN 06',
+      title: 'Emergency • Critical Incident Response',
+      subtitle: 'High-alert critical state triggered by manual SOS or automatic physiological threshold anomaly'
+    }
+  ];
+
+  function getZoneTextAndClass(val, safeMin, safeMax, warnMin, warnMax) {
+    if (val >= safeMin && val <= safeMax) return { text: 'OPTIMAL (SAFE)', cls: 'status-safe-text' };
+    if (val >= warnMin && val <= warnMax) return { text: 'ELEVATED (WARNING)', cls: 'status-warn-text' };
+    return { text: 'CRITICAL HAZARD', cls: 'status-alert-text' };
+  }
+
+  function renderModalInspector(screenIdx) {
+    if (!modalInspectorContent) return;
+
+    const isoDateStr = new Date().toISOString();
+
+    if (screenIdx === 1) {
+      // 02 HEALTH
+      const hrStatus = getZoneTextAndClass(currentHr, 60, 100, 50, 120);
+      const spo2Status = currentSpo2 >= 95 ? { text: 'OPTIMAL (>95%)', cls: 'status-safe-text' } : currentSpo2 >= 90 ? { text: 'MILD HYPOXIA', cls: 'status-warn-text' } : { text: 'CRITICAL HYPOXIA', cls: 'status-alert-text' };
+      const tempStatus = currentTemp >= 36.1 && currentTemp <= 37.2 ? { text: 'NORMOTHERMIC', cls: 'status-safe-text' } : currentTemp <= 38.4 ? { text: 'ELEVATED / FEVER', cls: 'status-warn-text' } : { text: 'HYPERTHERMIA ALERT', cls: 'status-alert-text' };
+      const motionStatus = isFallDetected ? { text: '4.8G FALL IMPACT', cls: 'status-alert-text' } : { text: 'NORMAL GAIT', cls: 'status-safe-text' };
+
+      modalInspectorContent.innerHTML = `
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>PHYSIOLOGICAL TELEMETRY STREAM</span>
+            <span class="badge-tech">${currentThreatLevel}</span>
+          </div>
+          <div class="modal-metrics-grid">
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Heart Rate (MAX30102)</span>
+              <span class="metric-box-val">${currentHr} <span style="font-size:0.75rem; color:var(--text-secondary);">BPM</span></span>
+              <span class="metric-box-status ${hrStatus.cls}">${hrStatus.text}</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">SpO₂ Oxygen (MAX30102)</span>
+              <span class="metric-box-val">${currentSpo2} <span style="font-size:0.75rem; color:var(--text-secondary);">%</span></span>
+              <span class="metric-box-status ${spo2Status.cls}">${spo2Status.text}</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Body Temp (MLX90614)</span>
+              <span class="metric-box-val">${currentTemp.toFixed(1)} <span style="font-size:0.75rem; color:var(--text-secondary);">°C</span></span>
+              <span class="metric-box-status ${tempStatus.cls}">${tempStatus.text}</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Motion (LSM6DSOX)</span>
+              <span class="metric-box-val" style="font-size:1.05rem;">${currentMotion}</span>
+              <span class="metric-box-status ${motionStatus.cls}">${motionStatus.text}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>HARDWARE SENSOR BUS STATUS & SAMPLING</span>
+            <span style="font-size:0.72rem; color:var(--text-secondary);">ESP32-C3 I2C/SPI</span>
+          </div>
+          <table class="modal-telemetry-table">
+            <thead>
+              <tr>
+                <th>SENSOR IC</th>
+                <th>BUS / ADDR</th>
+                <th>RATE</th>
+                <th>DIAGNOSTIC STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>MAX30102</strong> Optical PPG</td>
+                <td class="table-mono">I2C (0x57)</td>
+                <td class="table-mono">100 Hz</td>
+                <td><span class="status-safe-text">● ACTIVE (Low-Noise Mode)</span></td>
+              </tr>
+              <tr>
+                <td><strong>MLX90614</strong> Medical IR</td>
+                <td class="table-mono">I2C (0x5A)</td>
+                <td class="table-mono">10 Hz</td>
+                <td><span class="status-safe-text">● ACTIVE (±0.2°C Calibrated)</span></td>
+              </tr>
+              <tr>
+                <td><strong>LSM6DSOX</strong> 6-DoF IMU</td>
+                <td class="table-mono">SPI (10MHz)</td>
+                <td class="table-mono">208 Hz</td>
+                <td><span class="${isFallDetected ? 'status-alert-text' : 'status-safe-text'}">● ${isFallDetected ? 'FALL EVENT LATCHED' : 'ML CORE STABLE'}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:0.72rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:4px;">
+            <span>Last Telemetry Sync: <span class="table-mono" style="color:var(--text-primary);">${isoDateStr}</span></span>
+            <span>Transmission: <span style="color:var(--color-safe);">868.1 MHz LoRa</span></span>
+          </div>
+        </div>
+
+        <div class="med-disclaimer" style="padding:0.6rem; font-size:0.72rem;">
+          ⚠️ <strong>FIELD TELEMETRY DISCLAIMER:</strong> Physiological data is collected for tactical search & rescue field monitoring and operator safety tracking. Not intended for direct clinical diagnostic replacement.
+        </div>
+      `;
+    } else if (screenIdx === 2) {
+      // 03 LOCATION
+      modalInspectorContent.innerHTML = `
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>TACTICAL GNSS LOCALIZATION</span>
+            <span class="status-safe-text">● 3D FIX ACTIVE</span>
+          </div>
+          <div class="modal-metrics-grid">
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Latitude</span>
+              <span class="metric-box-val" style="font-size:1.1rem;">11.016844° N</span>
+              <span class="metric-box-status status-safe-text">WGS84 Reference</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Longitude</span>
+              <span class="metric-box-val" style="font-size:1.1rem;">76.955832° E</span>
+              <span class="metric-box-status status-safe-text">WGS84 Reference</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Altitude</span>
+              <span class="metric-box-val">412 <span style="font-size:0.75rem; color:var(--text-secondary);">m MSL</span></span>
+              <span class="metric-box-status status-safe-text">Barometric Fusion</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Horizontal Accuracy</span>
+              <span class="metric-box-val">±1.4 <span style="font-size:0.75rem; color:var(--text-secondary);">m</span></span>
+              <span class="metric-box-status status-safe-text">Sub-Meter DGPS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>SPATIAL VECTOR & SATELLITE CONSTELLATION</span>
+            <span style="font-size:0.72rem; color:var(--text-secondary);">u-blox MAX-M10S</span>
+          </div>
+          <table class="modal-telemetry-table">
+            <tbody>
+              <tr>
+                <td><strong>Satellites Tracked</strong></td>
+                <td class="table-mono" style="color:var(--color-accent);">14 Satellites</td>
+                <td>Multi-constellation: GPS (6), Galileo (4), BeiDou (4)</td>
+              </tr>
+              <tr>
+                <td><strong>GNSS Fix Type</strong></td>
+                <td class="table-mono status-safe-text">3D FIX (Carrier Phase DGPS)</td>
+                <td>HDOP: 0.82 • VDOP: 1.10</td>
+              </tr>
+              <tr>
+                <td><strong>Companion Rover Link</strong></td>
+                <td class="table-mono" style="color:var(--color-safe);">RAKSHA-01 LINKED</td>
+                <td>Mesh distance: <strong>185m</strong> • Bearing: <strong>038° NNE</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Compass Azimuth</strong></td>
+                <td class="table-mono">038° Azimuth</td>
+                <td>Magnetic declination: -0.42° applied</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    } else if (screenIdx === 3) {
+      // 04 SOS
+      modalInspectorContent.innerHTML = `
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>EMERGENCY SOS CONTROLLER</span>
+            <span class="${currentThreatLevel === 'CRITICAL' ? 'status-alert-text' : 'status-warn-text'}">● ${currentThreatLevel === 'CRITICAL' ? 'DISTRESS PROTOCOL ACTIVE' : 'SYSTEM ARMED & STANDBY'}</span>
+          </div>
+          <div class="modal-metrics-grid">
+            <div class="modal-metric-box">
+              <span class="metric-box-label">SOS Trigger State</span>
+              <span class="metric-box-val" style="font-size:1rem; color:${currentThreatLevel === 'CRITICAL' ? 'var(--color-emergency)' : 'var(--color-warning)'};">${currentThreatLevel === 'CRITICAL' ? 'TRANSMITTING' : 'ARMED / IDLE'}</span>
+              <span class="metric-box-status">${currentThreatLevel === 'CRITICAL' ? 'Distress Beacon Live' : '3s Hold Required'}</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Locked Coordinates</span>
+              <span class="metric-box-val" style="font-size:0.95rem;">11.0168, 76.9558</span>
+              <span class="metric-box-status status-safe-text">GNSS Accuracy ±1.4m</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Rover Mesh Channel</span>
+              <span class="metric-box-val" style="font-size:1.1rem; color:var(--color-safe);">CONNECTED</span>
+              <span class="metric-box-status status-safe-text">RAKSHA-01 Standing By</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">RF Uplink Signal</span>
+              <span class="metric-box-val" style="font-size:1.1rem;">-64 <span style="font-size:0.75rem; color:var(--text-secondary);">dBm</span></span>
+              <span class="metric-box-status status-safe-text">SNR +9.8 dB (4/4 Bars)</span>
+            </div>
+          </div>
+          <div class="modal-action-row">
+            <button id="modalEmergencyTriggerBtn" class="modal-action-btn btn-danger">
+              <span>🚨</span> <span>Trigger Immediate SOS Broadcast</span>
+            </button>
+            <button id="modalEmergencyResetBtn" class="modal-action-btn btn-accent" style="background:transparent; border-color:var(--border-color); color:var(--text-primary);">
+              <span>✕</span> <span>Reset / Cancel Distress</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>FAIL-SAFE HARDWARE TRIGGER ARCHITECTURE</span>
+            <span style="font-size:0.72rem; color:var(--text-secondary);">Zero False-Alarm Guarantee</span>
+          </div>
+          <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.45;">
+            To eliminate accidental activations during extreme search and rescue operations, the SOS trigger employs:
+          </p>
+          <ul class="spec-bullet-list" style="margin-top:0.35rem; font-size:0.78rem;">
+            <li><strong>Hardware Debounced Actuator:</strong> IP68 sealed tactical pushbutton with pull-up interrupt.</li>
+            <li><strong>3000ms Continuous Hold Confirmation:</strong> Visual circular countdown timer with haptic and audio ramps.</li>
+            <li><strong>Instant P2P Mesh Beacon:</strong> Upon trigger, broadcasts coordinates to RAKSHA-01 and central command with zero backoff.</li>
+          </ul>
+        </div>
+      `;
+
+      const modalTrig = document.getElementById('modalEmergencyTriggerBtn');
+      const modalRes = document.getElementById('modalEmergencyResetBtn');
+      if (modalTrig) {
+        modalTrig.addEventListener('click', () => {
+          triggerEmergencyState();
+          renderModalInspector(screenIdx);
+        });
+      }
+      if (modalRes) {
+        modalRes.addEventListener('click', () => {
+          applyPreset(82, 97, 36.7, false);
+          renderInteractiveScreen(0);
+          playTacticalTick();
+          renderModalInspector(screenIdx);
+        });
+      }
+    } else if (screenIdx === 4) {
+      // 05 ROVER LINK
+      modalInspectorContent.innerHTML = `
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>AUTONOMOUS GROUND ROVER TELEMETRY</span>
+            <span class="status-safe-text">● MESH LINK OPERATIONAL</span>
+          </div>
+          <div class="modal-metrics-grid">
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Companion Rover</span>
+              <span class="metric-box-val" style="font-size:1.15rem; color:var(--color-accent);">RAKSHA-01</span>
+              <span class="metric-box-status status-safe-text">UGV-TACTICAL-MK3</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Range & Distance</span>
+              <span class="metric-box-val">185 <span style="font-size:0.75rem; color:var(--text-secondary);">m</span></span>
+              <span class="metric-box-status status-safe-text">Proximity Zone 2</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Relative Azimuth</span>
+              <span class="metric-box-val">038° <span style="font-size:0.75rem; color:var(--text-secondary);">NNE</span></span>
+              <span class="metric-box-status status-safe-text">Direct Line of Sight</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Rover Battery</span>
+              <span class="metric-box-val" style="color:var(--color-safe);">82 <span style="font-size:0.75rem; color:var(--text-secondary);">%</span></span>
+              <span class="metric-box-status status-safe-text">LiFePO4 48V (3.4h runtime)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>WIRELESS LINK BUDGET & RF SPECIFICATION</span>
+            <span style="font-size:0.72rem; color:var(--text-secondary);">SX1262 LoRa Transceiver</span>
+          </div>
+          <table class="modal-telemetry-table">
+            <tbody>
+              <tr>
+                <td><strong>Operating Frequency</strong></td>
+                <td class="table-mono" style="color:var(--color-accent);">868.100 MHz</td>
+                <td>ISM Disaster Rescue Band (Europe/India mesh)</td>
+              </tr>
+              <tr>
+                <td><strong>Received Signal (RSSI)</strong></td>
+                <td class="table-mono status-safe-text">-64 dBm</td>
+                <td>Excellent link margin (+28 dB over noise floor)</td>
+              </tr>
+              <tr>
+                <td><strong>Signal-to-Noise (SNR)</strong></td>
+                <td class="table-mono status-safe-text">+9.8 dB</td>
+                <td>Clear constellation, zero packet loss in last 60s</td>
+              </tr>
+              <tr>
+                <td><strong>Payload Modulation</strong></td>
+                <td class="table-mono">LoRa SF7 / BW 125kHz</td>
+                <td>P2P AES-128 Hardware Encrypted Telemetry Packets</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="modal-action-row" style="margin-top:0.75rem;">
+            <button id="modalDispatchRoverBtn" class="modal-action-btn btn-accent">
+              <span>🤖</span> <span>Dispatch RAKSHA-01 to My Coordinates</span>
+            </button>
+            <button id="modalPingRoverBtn" class="modal-action-btn" style="background:var(--bg-surface); border:1px solid var(--border-color); color:var(--text-primary);">
+              <span>📡</span> <span>Ping Telemetry Round-Trip</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      const dispatchBtn = document.getElementById('modalDispatchRoverBtn');
+      const pingBtn = document.getElementById('modalPingRoverBtn');
+      if (dispatchBtn) {
+        dispatchBtn.addEventListener('click', () => {
+          triggerEmergencyState();
+          renderModalInspector(screenIdx);
+        });
+      }
+      if (pingBtn) {
+        pingBtn.addEventListener('click', () => {
+          playLoRaChirp();
+          pingBtn.innerHTML = '<span>✓</span> <span>ACK Received: 1.2ms (RSSI -64 dBm)</span>';
+          setTimeout(() => {
+            pingBtn.innerHTML = '<span>📡</span> <span>Ping Telemetry Round-Trip</span>';
+          }, 1500);
+        });
+      }
+    } else if (screenIdx === 5) {
+      // 06 EMERGENCY
+      modalInspectorContent.innerHTML = `
+        <div class="modal-card" style="border-color:var(--color-emergency); background:rgba(239,68,68,0.06);">
+          <div class="modal-card-title">
+            <span style="color:var(--color-emergency);">🚨 ACTIVE CRITICAL EMERGENCY INCIDENT</span>
+            <span class="badge-tech" style="background:var(--color-emergency); color:#FFFFFF; border-color:var(--color-emergency);">HIGH ALERT</span>
+          </div>
+          <div class="modal-metrics-grid">
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Incident Identifier</span>
+              <span class="metric-box-val" style="font-size:0.95rem; color:var(--color-emergency);">INC-EMERGENCY</span>
+              <span class="metric-box-status status-alert-text">Trigger: High-Distress Anomaly</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Distressed Vitals</span>
+              <span class="metric-box-val" style="font-size:1.05rem;">${currentHr} BPM / ${currentSpo2}%</span>
+              <span class="metric-box-status status-alert-text">${currentHr > 120 ? 'Tachycardia' : currentSpo2 < 90 ? 'Hypoxia' : 'Elevated Stress'}</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Autonomous Rover ETA</span>
+              <span class="metric-box-val" style="color:var(--color-accent);">03:45 <span style="font-size:0.75rem; color:var(--text-secondary);">MIN</span></span>
+              <span class="metric-box-status status-safe-text">RAKSHA-01 Dispatched</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Command ACK</span>
+              <span class="metric-box-val" style="font-size:1.05rem; color:var(--color-safe);">RECEIVED</span>
+              <span class="metric-box-status status-safe-text">Search & Rescue Incident Open</span>
+            </div>
+          </div>
+          <div class="modal-action-row" style="margin-top:0.75rem;">
+            <button id="modalResolveEmergencyBtn" class="modal-action-btn btn-accent" style="width:100%; justify-content:center;">
+              <span>✓</span> <span>Acknowledge & Cancel Emergency Protocol</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>AUTOMATED INCIDENT RESPONSE TIMELINE</span>
+            <span style="font-size:0.72rem; color:var(--text-secondary);">Audit Log</span>
+          </div>
+          <table class="modal-telemetry-table">
+            <tbody>
+              <tr>
+                <td class="table-mono" style="color:var(--color-emergency); width:90px;">[00:00:01]</td>
+                <td><strong>Distress Alert Registered</strong></td>
+                <td>Emergency interrupt dispatched over 868.1 MHz LoRa</td>
+              </tr>
+              <tr>
+                <td class="table-mono" style="color:var(--color-safe); width:90px;">[00:00:02]</td>
+                <td><strong>GNSS Coordinates Broadcast</strong></td>
+                <td>Shared: 11.016844° N, 76.955832° E (±1.4m accuracy)</td>
+              </tr>
+              <tr>
+                <td class="table-mono" style="color:var(--color-safe); width:90px;">[00:00:03]</td>
+                <td><strong>RAKSHA-01 Autonomous UGV Handshake</strong></td>
+                <td>Rover ACK received • Engine ignition active • En-route</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      const resolveBtn = document.getElementById('modalResolveEmergencyBtn');
+      if (resolveBtn) {
+        resolveBtn.addEventListener('click', () => {
+          applyPreset(82, 97, 36.7, false);
+          renderInteractiveScreen(0);
+          playTacticalTick();
+          closeWatchDetailModal();
+        });
+      }
+    } else {
+      // 01 HOME (Default)
+      modalInspectorContent.innerHTML = `
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>OPERATIONAL STATUS & SENSING OVERVIEW</span>
+            <span class="status-safe-text">● ${currentThreatLevel === 'SAFE' ? 'ALL SYSTEMS NORMAL' : currentThreatLevel}</span>
+          </div>
+          <div class="modal-metrics-grid">
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Current Heart Rate</span>
+              <span class="metric-box-val">${currentHr} <span style="font-size:0.75rem; color:var(--text-secondary);">BPM</span></span>
+              <span class="metric-box-status ${currentHr > 100 ? 'status-warn-text' : 'status-safe-text'}">${currentHr > 100 ? 'Elevated' : 'Resting Baseline'}</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">SpO₂ Saturation</span>
+              <span class="metric-box-val">${currentSpo2} <span style="font-size:0.75rem; color:var(--text-secondary);">%</span></span>
+              <span class="metric-box-status ${currentSpo2 < 95 ? 'status-warn-text' : 'status-safe-text'}">${currentSpo2 < 95 ? 'Moderate' : 'Optimal'}</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Body Temperature</span>
+              <span class="metric-box-val">${currentTemp.toFixed(1)} <span style="font-size:0.75rem; color:var(--text-secondary);">°C</span></span>
+              <span class="metric-box-status status-safe-text">Normothermic</span>
+            </div>
+            <div class="modal-metric-box">
+              <span class="metric-box-label">Kinematics Motion</span>
+              <span class="metric-box-val" style="font-size:1.05rem;">${currentMotion}</span>
+              <span class="metric-box-status ${isFallDetected ? 'status-alert-text' : 'status-safe-text'}">${isFallDetected ? 'FALL DETECTED' : 'Zero Anomaly'}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-card">
+          <div class="modal-card-title">
+            <span>SYSTEM HARDWARE ARCHITECTURE & TELEMETRY</span>
+            <span style="font-size:0.72rem; color:var(--text-secondary);">Model W-01</span>
+          </div>
+          <table class="modal-telemetry-table">
+            <tbody>
+              <tr>
+                <td><strong>Wearable Controller</strong></td>
+                <td class="table-mono">ESP32-C3 RISC-V 32-bit (160MHz)</td>
+                <td>Embedded Hardware Cryptography & Deep Sleep</td>
+              </tr>
+              <tr>
+                <td><strong>Battery & Power</strong></td>
+                <td class="table-mono" style="color:var(--color-safe);">88% (LiPo 3.7V 420mAh)</td>
+                <td>~36 hours operating life on active LoRa beacon</td>
+              </tr>
+              <tr>
+                <td><strong>GNSS Tracking</strong></td>
+                <td class="table-mono status-safe-text">3D FIX (14 Sats)</td>
+                <td>11.016844° N, 76.955832° E (±1.4m accuracy)</td>
+              </tr>
+              <tr>
+                <td><strong>Mesh Comms Bridge</strong></td>
+                <td class="table-mono" style="color:var(--color-accent);">868.1 MHz LoRa</td>
+                <td>Linked to Autonomous Ground Rover RAKSHA-01</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  }
+
+  function openWatchDetailModal(screenIndex) {
+    if (!watchDetailModal) return;
+
+    activeModalScreenIndex = screenIndex;
+    const meta = MODAL_SCREEN_METAS[screenIndex] || MODAL_SCREEN_METAS[0];
+
+    if (modalScreenBadge) modalScreenBadge.textContent = meta.badge;
+    if (modalScreenTitle) modalScreenTitle.textContent = meta.title;
+    if (modalScreenSubtitle) modalScreenSubtitle.textContent = meta.subtitle;
+
+    // Mount physical watch clone
+    if (modalWatchMount && screenSources[screenIndex]) {
+      const casing = document.createElement('div');
+      casing.className = `smartwatch-casing ${isRuggedCasing ? '' : 'minimal-casing'} ${screenIndex === 5 ? 'emergency-casing alert-border-pulse' : ''}`;
+      casing.innerHTML = `
+        <div class="case-lug lug-top"></div>
+        <div class="case-body ${screenIndex === 5 ? 'alert-border-pulse' : ''}">
+          <div class="case-screw screw-tl"></div>
+          <div class="case-screw screw-tr"></div>
+          <div class="case-screw screw-bl"></div>
+          <div class="case-screw screw-br"></div>
+          <div class="case-crown"></div>
+          <div class="case-sos-guard"><div class="case-sos-button ${screenIndex === 3 ? 'active-pressable' : screenIndex === 5 ? 'active-alert' : ''}"></div></div>
+          <div class="screen-viewport ${screenIndex === 5 ? 'screen-emergency' : ''}">
+            ${screenSources[screenIndex].innerHTML}
+          </div>
+        </div>
+        <div class="case-lug lug-bottom"></div>
+      `;
+
+      modalWatchMount.innerHTML = '';
+      modalWatchMount.appendChild(casing);
+      attachScreenEvents(modalWatchMount);
+    }
+
+    renderModalInspector(screenIndex);
+
+    watchDetailModal.classList.add('active');
+    document.body.classList.add('modal-open');
+    playTacticalTick();
+  }
+
+  function closeWatchDetailModal() {
+    if (!watchDetailModal) return;
+    watchDetailModal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    if (modalWatchMount) modalWatchMount.innerHTML = '';
+    activeModalScreenIndex = null;
+    playTacticalTick();
+  }
+
+  // Hook into modal close button
+  if (closeWatchModalBtn) {
+    closeWatchModalBtn.addEventListener('click', closeWatchDetailModal);
+  }
+
+  // Clicking outside modal closes it
+  if (watchDetailModal) {
+    watchDetailModal.addEventListener('click', (e) => {
+      if (e.target === watchDetailModal) {
+        closeWatchDetailModal();
+      }
+    });
+  }
+
+  // Hook into all watch column cards in 6-screen showcase
+  const showcaseCols = document.querySelectorAll('.screen-presentation-col');
+  showcaseCols.forEach(col => {
+    col.addEventListener('click', () => {
+      const idxStr = col.getAttribute('data-screen-index');
+      const idx = parseInt(idxStr, 10);
+      if (!isNaN(idx) && idx >= 0 && idx <= 5) {
+        openWatchDetailModal(idx);
+      }
+    });
+  });
+
+  // Hook into telemetry updates to refresh modal inspector live
   let telemetryDebounceTimer = null;
   const prevUpdateAllSensors = updateAllSensors;
   updateAllSensors = function() {
     prevUpdateAllSensors();
+    if (activeModalScreenIndex !== null) {
+      renderModalInspector(activeModalScreenIndex);
+    }
     if (telemetryDebounceTimer) clearTimeout(telemetryDebounceTimer);
     telemetryDebounceTimer = setTimeout(() => {
       sendTelemetryToBackend();
